@@ -1,0 +1,6 @@
+(stats
+  (meta
+    (timestamp "2011-05-04T17:21:19.906-04:00"^^<http://www.w3.org/2001/XMLSchema#dateTime>)
+    (run@ "2011/05/04 17:21:19 EDT")
+    (count 0))
+  (other 0))
