@@ -1,0 +1,101 @@
+Twitter
+=======
+
+Search celebrities (their Twitter IDs listed in celebrities.txt, one per line)
+view-source:http://search.twitter.com/search.atom?q=@ladygaga
+
+  Each entry corresponds to a tweet mentioning @ladygaga
+    Collect users <author><uri>
+    and their Twitter clients <twitter:source>
+    You can parse screen_names out of the <author><uri> tag
+    These users MENTION the celebrity
+    
+Can also get followers of celebrities http://developer.twitter.com/doc/get/followers/ids
+  A list of IDs will be returned which you can use to look up each user
+  These users FOLLOW the celebrity
+    
+Lookup users and celebrities (need OAuth authentication) http://developer.twitter.com/doc/get/users/lookup
+  http://api.twitter.com/1/users/lookup.xml?screen_name=blah_blah or http://api.twitter.com/1/users/lookup.json?user_id=783214,6253282
+  Save their location <location>
+  Save their name <name>
+
+  
+At this point you will be able to write the triples
+
+Note that the property TwitterID implies that you're a TwitterUser
+
+celebrity rdfs:type ctalk:CelebrityIndividual or ctalk:CelebrityGroup (do this by hand) or user rdfs:type ctalk:TwitterUser
+user foaf:name "John Doe"
+user ctalk:TwitterID "ladygaga"
+user ctalk:hasLocation location
+user ctalk:hasTwitterClient tclient
+user ctalk:mentioned celebrity AND/OR user ctalk:follows celebrity
+
+location rdfs:type ctalk:Location
+location ctalk:city "San Francisco"
+location ctalk:state "CA"
+
+tclient rdfs:type ctalk:TwitterClient
+tclient foaf:name "Twitter Web"
+
+
+DBPedia
+=======
+
+Lookup locations like http://dbpedia.org/page/San_Francisco (http://dbpedia.org/data/San_Francisco.ntriples)
+For each location,
+  Save dbpprop:latd, dbpprop:latm, dbpprop:latns, dbpprop:lats, dbpprop:longd, dbpprop:longew, dbpprop:longm, dbpprop:longs
+  Save dbpedia-owl:populationTotal
+  Save dbpedia-owl:areaTotal
+
+Now you have the triples
+user ctalk:hasLocation location OR celeb ctalk:hasLocation location
+location ctalk:landArea 1234
+location ctalk:population 12345
+location ctalk:latitude 123.456
+location ctalk:longitude 123.456
+
+Note that because the DBpedia ontology is too large, I define new properties as above. You need to convert the latitude/longitude
+properties from the DBpedia format to this new one. To convert.
+latitude = latd + latm/60 + lats/3600 * (1 if latns = N, -1 if latns = S)
+longitude = same * (1 if longew = E, -1 if longew = W)
+Also see http://andrew.hedges.name/experiments/convert_lat_long/
+This will make it easier to formulate SPARQL queries
+
+Last.fm
+=======
+For each celebrity artist, get their events http://www.last.fm/api/show?service=117
+For each event,
+  Save <geo:point><geo:lat>, <geo:long>
+  Save <city>, <country>
+  Save <title>
+  Save <startDate> *optional, this might be complex
+
+If you feel like, you can make startDate more accessible by converting to milliseconds since Unix epoch  
+http://stackoverflow.com/questions/5058500/how-to-convert-date-time-string-into-minutes-since-unix-epoch
+  
+Now you have
+celeb ctalk:hasEvent event
+event foaf:name "Title of event"
+event ctalk:hasLocation loc
+loc ctalk:latitude 123.456
+loc ctalk:longitude 123.456
+loc ctalk:city "Somecity"
+loc ctalk:country "SomeCountry"
+
+
+Freebase
+========
+http://rdf.freebase.com/rdf/en.lady_gaga
+
+
+
+Other Stuff (If we have time)
+=============================
+Lookup celebrity birth places/hometowns like http://dbpedia.org/page/Lady_Gaga (http://dbpedia.org/data/Lady_Gaga.ntriples)
+For each celebrity,
+  Save dbpedia-owl:birthPlace OR dbpedia-owl:hometown
+  
+Now you have the triple
+celeb ctalk:birthLocation loc
+loc ctalk:city 12345

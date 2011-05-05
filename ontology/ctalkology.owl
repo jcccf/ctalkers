@@ -26,6 +26,169 @@
     <!-- 
     ///////////////////////////////////////////////////////////////////////////////////////
     //
+    // Datatypes
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Object Properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#followedBy -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;followedBy">
+        <owl:inverseOf rdf:resource="&ctalkology;follows"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#follows -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;follows">
+        <rdfs:domain rdf:resource="&ctalkology;TwitterUser"/>
+        <rdfs:range rdf:resource="&ctalkology;TwitterUser"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#hasEvent -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;hasEvent">
+        <rdfs:range rdf:resource="&ctalkology;Event"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#hasLocation -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;hasLocation">
+        <rdfs:range rdf:resource="&ctalkology;Location"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#hasTwitterClient -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;hasTwitterClient">
+        <rdfs:range rdf:resource="&ctalkology;TwitterClient"/>
+        <rdfs:domain rdf:resource="&ctalkology;TwitterUser"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#mentioned -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;mentioned">
+        <rdfs:domain rdf:resource="&ctalkology;TwitterUser"/>
+        <rdfs:range rdf:resource="&ctalkology;TwitterUser"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#mentionedBy -->
+
+    <owl:ObjectProperty rdf:about="&ctalkology;mentionedBy">
+        <owl:inverseOf rdf:resource="&ctalkology;mentioned"/>
+    </owl:ObjectProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // Data properties
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#city -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;city">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#country -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;country">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#landArea -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;landArea">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#latitude -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;latitude">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#longitude -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;longitude">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&xsd;float"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#population -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;population">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&xsd;integer"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#state -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;state">
+        <rdfs:domain rdf:resource="&ctalkology;Location"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#twitterID -->
+
+    <owl:DatatypeProperty rdf:about="&ctalkology;twitterID">
+        <rdfs:domain rdf:resource="&ctalkology;TwitterUser"/>
+        <rdfs:range rdf:resource="&rdfs;Literal"/>
+    </owl:DatatypeProperty>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
     // Classes
     //
     ///////////////////////////////////////////////////////////////////////////////////////
@@ -34,9 +197,109 @@
     
 
 
-    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#People -->
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#Celebrity -->
 
-    <owl:Class rdf:about="&ctalkology;People"/>
+    <owl:Class rdf:about="&ctalkology;Celebrity">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Entities"/>
+        <rdfs:subClassOf>
+            <owl:Class>
+                <owl:unionOf rdf:parseType="Collection">
+                    <rdf:Description rdf:about="&ctalkology;CelebrityGroup"/>
+                    <rdf:Description rdf:about="&ctalkology;CelebrityIndividual"/>
+                </owl:unionOf>
+            </owl:Class>
+        </rdfs:subClassOf>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#CelebrityGroup -->
+
+    <owl:Class rdf:about="&ctalkology;CelebrityGroup">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Celebrity"/>
+        <owl:disjointWith rdf:resource="&ctalkology;CelebrityIndividual"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#CelebrityIndividual -->
+
+    <owl:Class rdf:about="&ctalkology;CelebrityIndividual">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Celebrity"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#Entities -->
+
+    <owl:Class rdf:about="&ctalkology;Entities"/>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#Event -->
+
+    <owl:Class rdf:about="&ctalkology;Event">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#Location -->
+
+    <owl:Class rdf:about="&ctalkology;Location">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#TwitterClient -->
+
+    <owl:Class rdf:about="&ctalkology;TwitterClient">
+        <rdfs:subClassOf rdf:resource="&ctalkology;Entities"/>
+    </owl:Class>
+    
+
+
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#TwitterUser -->
+
+    <owl:Class rdf:about="&ctalkology;TwitterUser">
+        <owl:equivalentClass>
+            <owl:Restriction>
+                <owl:onProperty rdf:resource="&ctalkology;twitterID"/>
+                <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
+            </owl:Restriction>
+        </owl:equivalentClass>
+        <rdfs:subClassOf rdf:resource="&ctalkology;Entities"/>
+    </owl:Class>
+    
+
+
+    <!-- 
+    ///////////////////////////////////////////////////////////////////////////////////////
+    //
+    // General axioms
+    //
+    ///////////////////////////////////////////////////////////////////////////////////////
+     -->
+
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&ctalkology;Event"/>
+            <rdf:Description rdf:about="&ctalkology;Location"/>
+            <rdf:Description rdf:about="&ctalkology;TwitterClient"/>
+            <rdf:Description rdf:about="&ctalkology;TwitterUser"/>
+        </owl:members>
+    </rdf:Description>
+    <rdf:Description>
+        <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
+        <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&ctalkology;Celebrity"/>
+            <rdf:Description rdf:about="&ctalkology;Event"/>
+            <rdf:Description rdf:about="&ctalkology;Location"/>
+            <rdf:Description rdf:about="&ctalkology;TwitterClient"/>
+        </owl:members>
+    </rdf:Description>
 </rdf:RDF>
 
 

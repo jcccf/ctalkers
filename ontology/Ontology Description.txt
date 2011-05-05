@@ -1,0 +1,45 @@
+Visual Ontology Diagram
+
+https://docs.google.com/drawings/d/1AnFuWvOZQoalyb4AIjKgikIV9FGFiMqrox6AiiVpwBo
+
+
+Hierarchy
+=========
+  Entities
+    Location
+    Event
+    TwitterClient
+    Celebrity
+      CelebrityIndividual
+      CelebrityGroup
+    TwitterUser
+
+Location
+  foaf:name
+  city (literal)
+  state (literal)
+  country (literal)
+  latitude (xsd:float)
+  longitude (xsd:float)
+  
+Event
+  foaf:name
+  hasLocation (Location)
+  
+TwitterClient
+  foaf:name
+  
+Celebrity
+  foaf:name
+  hasLocation (Location)
+  hasEvent (Event)
+  twitterID (literal)
+  
+CelebrityIndividual/CelebrityGroup are subclasses of Celebrity
+
+TwitterUser
+  twitterID (literal)
+  hasLocation (Location)
+  hasTwitterClient (TwitterClient)
+  follows <=> followedBy (TwitterUser)
+  mentioned <=> mentionedBy (TwitterUser)
