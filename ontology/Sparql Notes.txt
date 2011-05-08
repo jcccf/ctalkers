@@ -1,5 +1,126 @@
 http://www.w3.org/TR/rdf-sparql-query/
 
+Questions
+=========
+Who follows Lady Gaga?
+
+    SELECT ?username
+    WHERE {
+      ?user
+        foaf:name ?username;
+        ct:follows ?celebrity.
+      ?celebrity
+        rdfs:type ct:Celebrity;
+        foaf:name "Lady Gaga".
+    }
+
+Who mentions Lady Gaga?
+
+    SELECT ?username
+    WHERE {
+      ?user
+        foaf:name ?username.
+      ?celebrity 
+        ct:mentionedBy ?user;
+        rdfs:type ct:Celebrity;
+        foaf:name "Lady Gaga".
+    }
+
+Which celebrities use which Twitter clients?
+
+    SELECT ?celebrityname, ?clientname
+    WHERE {
+      ?celebrity 
+        foaf:name ?celebrityname;
+        rdfs:type ct:Celebrity;
+        ct:hasTwitterClient ?client.
+      ?client
+        foaf:name ?clientname.
+    }
+
+Who follows/mentions a celebrity and lives in the same place as the celebrity?
+
+    SELECT ?username
+    WHERE {
+      {?user
+        foaf:name ?username;
+        ct:follows ?celebrity;
+        ct:hasLocation ?location.
+      ?celebrity
+        foaf:name "Lady Gaga";
+        hasLocation ?location.} UNION
+      {?user
+        foaf:name ?username;
+        ct:mentioned ?celebrity;
+        ct:hasLocation ?location.
+      ?celebrity
+        foaf:name "Lady Gaga";
+        ct:hasLocation ?location.}
+    }
+
+
+Who lives in some range of lat/long coordinates?
+
+    SELECT ?name
+    WHERE {
+      ?user
+        foaf:name ?name;
+        ct:hasLocation ?location.
+      ?location
+        ct:latitude ?lat;
+        ct:longitude ?lon.
+        FILTER (?lat < 123.4)
+        FILTER (?lat > 100.0)
+        FILTER (?lon < 100.0)
+        FILTER (?lon > 0.0)
+    }
+
+Return user and event pairs where 
+  an event is by a celebrity the user mentions or follows 
+    and is in the same location as the user.
+    
+    SELECT ?username, ?celebrityname, ?eventname
+    WHERE {
+      {?user
+        foaf:name ?username;
+        ct:follows ?celebrity;
+        ct:hasLocation ?location.
+      ?celebrity
+        foaf:name ?celebrityname;
+        ct:hasEvent ?event.
+      ?event
+        foaf:name ?eventname;
+        ct:hasLocation ?location.} UNION
+      {?user
+        foaf:name ?username;
+        ct:mentioned ?celebrity;
+        ct:hasLocation ?location.
+      ?celebrity
+        foaf:name ?celebrityname;
+        ct:hasEvent ?event.
+      ?event
+        foaf:name ?eventname;
+        ct:hasLocation ?location.}  
+    }
+
+Return a list of users who follow a celebrity and use the same Twitter Client as the celebrity.
+
+    SELECT ?username, ?celebrityname
+    WHERE {
+      ?user
+        foaf:name ?username;
+        ct:follows ?celebrity;
+        ct:hasTwitterClient ?client.
+      ?celebrity
+        foaf:name ?celebrityname;
+        ct:hasTwitterClient ?client.
+    }
+
+SPARQL
+======
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+PREFIX ct: <http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#>
+
 
 
 To Restrict to Some Lat/Long
@@ -12,3 +133,38 @@ SELECT  ?title ?price
 WHERE   { ?x ns:price ?price .
           FILTER (?price < 30.5)
           ?x dc:title ?title . }
+          
+          
+Random Queries
+==============
+You can run these on the DBPedia SPARQL Endpoint at http://dbpedia.org/sparql
+
+Find films which have a budget of exactly 1.9 billion yen.
+----------------------------------------------------------
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        
+    PREFIX prop: <http://dbpedia.org/property/>
+    PREFIX onto: <http://dbpedia.org/ontology/>
+    PREFIX reso: <http://dbpedia.org/resource/>
+
+SELECT ?name
+WHERE {
+?film prop:name ?name;
+onto:budget "1.9E9"^^<http://dbpedia.org/datatype/japaneseYen>.
+}
+
+
+Find places which have land area > 100 km2 and < 10000 km2
+----------------------------------------------------------
+PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>        
+    PREFIX prop: <http://dbpedia.org/property/>
+    PREFIX onto: <http://dbpedia.org/ontology/>
+    PREFIX reso: <http://dbpedia.org/resource/>
+
+SELECT ?name, ?capital, ?area
+WHERE {
+?country foaf:name ?name;
+prop:capital ?capital;
+prop:areaKm ?area.
+FILTER(?area < 1000)
+FILTER(?area > 100)
+}
