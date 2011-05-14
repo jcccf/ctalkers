@@ -17,7 +17,7 @@ public class Ctalkerithm {
 	// name spaces
 	static String dbpResource = "http://dbpedia.org/resource/";
 	static String dbpProp = "http://dbpedia.org/property/";
-	static String dbpOwl = "http://dbpedia.org/dbpedia-owl/";
+	static String dbpOwl = "http://dbpedia.org/ontology/";
 	
 	static String dbpSparql = "http://dbpedia.org/sparql";
 
@@ -111,7 +111,6 @@ public class Ctalkerithm {
 		locations.add("Ithaca,_New_York");
 		//////////////////////////////
 
-
 		// Extract the following triples from each location
 		String [] props = {"latd", "latm", "latns", "lats", "longd", "longew", "longm", "longs"};
 		String [] owlProps = {"populationTotal", "areaTotal"};
@@ -119,14 +118,13 @@ public class Ctalkerithm {
 		for(String location: locations) {
 
 			// Create the prop query string
-//			String queryString = "SELECT ?" + Utils.join(props, " ?") + Utils.join(owlProps, " ?") + "\nWHERE {\n";
-			String queryString = "SELECT ?" + Utils.join(props, " ?") + "\nWHERE {\n";
+			String queryString = "SELECT ?" + Utils.join(props, " ?") + " ?" + Utils.join(owlProps, " ?") + "\nWHERE {\n";
 			for(String prop: props) {
 				queryString += "<" + dbpResource + location + "> <" + dbpProp + prop + "> ?" + prop + ".\n";
 			}
-//			for(String owlProp:owlProps) {
-//				queryString += "<" + dbpResource + location + "> <" + dbpOwl + owlProp + "> ?" + owlProp + ".\n";
-//			}
+			for(String owlProp:owlProps) {
+				queryString += "<" + dbpResource + location + "> <" + dbpOwl + owlProp + "> ?" + owlProp + ".\n";
+			}
 			queryString += "}";
 
 //			System.out.println(queryString);
@@ -136,22 +134,19 @@ public class Ctalkerithm {
 			QueryExecution qe = QueryExecutionFactory.sparqlService(dbpSparql, query);
 			ResultSet results = qe.execSelect();
 
-
 			QuerySolution res = results.next();
 			
+			// Store results (TODO)
+			
+			// for now just print
 			System.out.println("\n==================================================");
 			System.out.println("Location: "+ location);
-			
 			for(String prop: props) {
 				System.out.println(prop + ": " + res.get(prop));
 			}
-			
-//			for(String owlProp: owlProps) {
-//				System.out.println(owlProp + ": " + res.get(owlProp));
-//			}
-
-			// Output query results
-			//			ResultSetFormatter.out(System.out, results, query);
+			for(String owlProp: owlProps) {
+				System.out.println(owlProp + ": " + res.get(owlProp));
+			}
 
 			qe.close();
 
@@ -170,10 +165,6 @@ public class Ctalkerithm {
 		}
 
 		return stringResult;
-	}
-
-	public static ResultSet doSparql(String subj, String pred, String obj) {
-		return null;
 	}
 
 
