@@ -30,11 +30,13 @@ public class Ctalkerithm {
 		// for follower id's
 		XPath idXPath = XPath.newInstance("//id");		
 		
-		ArrayList<ArrayList<String>> celebMentionUsers = new ArrayList<ArrayList<String>>();
-		ArrayList<ArrayList<String>> celebUserSource = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> cTalkers = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> cTalkerSources = new ArrayList<ArrayList<String>>();
+		ArrayList<ArrayList<String>> cStalkers= new ArrayList<ArrayList<String>>();
+		
 
 		for(String celeb: celebs) {
-			// get mentioners
+			// get the celeb talkers
 			
 			SAXBuilder m = new SAXBuilder();
 			String celebMentionURL = "http://search.twitter.com/search.atom?q=@" + celeb;
@@ -56,35 +58,61 @@ public class Ctalkerithm {
 				userSourceList.add(source.getValue());
 			}
 
-			celebMentionUsers.add(userScreenNames);
-			celebUserSource.add(userSourceList);
+			cTalkers.add(userScreenNames);
+			cTalkerSources.add(userSourceList);
 			
 //			System.out.println(celeb + " tweeter uris: " + Utils.join(userScreenNames, ", "));
 //			System.out.println(celeb + " tweeter source: " + Utils.join(userSourceList, ", "));
 			
-			// get followers
+			// get the celeb stalkers (followers)
 			SAXBuilder f = new SAXBuilder();
 			Document followDoc = null;
 			String celebFollowURL = "http://api.twitter.com/1/followers/ids.xml?screen_name=" + celeb;
 			try {
 				followDoc = f.build(Utils.getURLStream(celebFollowURL));
 			} catch(Exception e) {
-				System.out.println("time out");
+				System.out.println("Time out: "+ celeb);
 			}
 			
 			if(followDoc == null) continue;
-			System.out.println("Success! Celeb: "+ celeb);
 			List<Element> followerIds = idXPath.selectNodes(followDoc);
 			
-			
-			
+			ArrayList<String> stalkerIDs = new ArrayList<String>();
 
+			for(Element id:followerIds) {
+				stalkerIDs.add(id.getValue());
+			}
+
+			cStalkers.add(stalkerIDs);
+			System.out.println(celeb + " stalker ids: " + Utils.join(stalkerIDs, ", "));
+			
 		}
 		
 		
+		
+		
+		// Possibly alter location search
+//        search_xml = Nokogiri::XML(open("http://api.search.live.net/xml.aspx?Appid=D922B026428E58D0B1B38C3CB94E227BF6B113BB&query=#{CGI.escape(search_query)}&sources=web"))
+//        #puts search_xml
+//        search_ns = {"xmlns:sr" => "http://schemas.microsoft.com/LiveSearch/2008/04/XML/element", "xmlns:web" => "http://schemas.microsoft.com/LiveSearch/2008/04/XML/web"}
+//        search_top_path = search_xml.xpath("/sr:SearchResponse/web:Web/web:Results/web:WebResult/web:Description",search_ns).first
+//        search_top = search_top_path ? search_top_path.content : ""
+//        search_altered_xpath = search_xml.xpath("/sr:SearchResponse/sr:Query/sr:AlteredQuery",search_ns)
+//        search_altered = search_altered_xpath.first ? search_altered_xpath.first.content : ""
+
+		
+		
+		
+		// Search DBpedia for location information
+		
+		
+		
 
 
-	}
+	}	
+	
 
+	
+	
 
 }
