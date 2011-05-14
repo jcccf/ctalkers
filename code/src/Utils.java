@@ -1,5 +1,6 @@
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 public class Utils {
 	
@@ -32,4 +33,26 @@ public class Utils {
 
 		return strAcc;
 	}
+	
+	public static InputStreamReader getURLStream(String urlString) throws Exception {
+		URL url = new URL(urlString);
+		URLConnection connection = url.openConnection();
+		return new InputStreamReader(connection.getInputStream());
+	}
+	
+	public static String join(ArrayList array, String delimiter) {
+		String joined = "";
+		if(array != null) {
+			for(int i=0; i<array.size(); i++) {
+				Object obj = array.get(i);
+				joined += obj.toString();
+				if(i < array.size() - 1) {
+					joined += delimiter;
+				}
+			}
+		}
+		return joined;
+	}
+	
+	
 }
