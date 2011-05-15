@@ -1,3 +1,5 @@
+import java.util.*;
+
 import org.openjena.atlas.iterator.Filter;
 import org.openjena.atlas.lib.Tuple;
 
@@ -33,6 +35,57 @@ import com.hp.hpl.jena.vocabulary.VCARD;
 public class Database {
 	private static String graphToHide = "http://example/g2";
 
+	public static void add_to_database(List<Location> locs, List<Celeb> celebs) {
+		String directory = "TDB-0.8.10/work/data/project2";
+		Model model = TDBFactory.createModel(directory);
+		// create the resource and add the property		
+		model.removeAll();
+
+		Map<Location, Resource> loc_res = new HashMap<Location, Resource>();
+		for (Location l : locs) {
+			Resource r = model.createResource(Ctalkology.Location)
+			.addProperty(Ctalkology.country, l.name) //TODO!!!!!!!!!!!!!!
+			.addProperty(Ctalkology.city, l.name)
+			.addLiteral(Ctalkology.latitude, l.latitude)
+			.addLiteral(Ctalkology.longitude, l.longitude)
+			.addLiteral(Ctalkology.population, l.populationTotal)
+			.addLiteral(Ctalkology.landArea, l.areaTotal);
+			
+			loc_res.put(l, r);
+		}
+		
+		Map<Evt, Resource> evt_res = new HashMap<Evt, Resource>();
+		for (Celeb c : celebs) {
+			for (Evt e : c.events) {
+				
+				Resource ev = model.createResource(Ctalkology.Event)
+				.addLiteral(FOAF.name, e.title)
+				.addProperty(Ctalkology.hasLocation, loc);
+			}
+		}
+		
+		
+
+		Resource tc = model.createResource(Ctalkology.TwitterClient)
+				.addLiteral(FOAF.name, "Tweetie");
+		Resource lg = model.createResource(Ctalkology.Celebrity)
+				.addLiteral(FOAF.name, "Lady Gaga")
+				.addProperty(Ctalkology.hasTwitterClient, tc)
+				.addProperty(Ctalkology.hasEvent, ev)
+				.addProperty(Ctalkology.hasLocation, loc);
+		Resource lgfan = model.createResource(Ctalkology.TwitterUser)
+				.addLiteral(FOAF.name, "Gagaga")
+				.addProperty(Ctalkology.follows, lg)
+				.addProperty(Ctalkology.hasLocation, loc2);
+		Resource lgfan2 = model.createResource(Ctalkology.TwitterUser)
+				.addLiteral(FOAF.name, "Kakaka")
+				.addProperty(Ctalkology.mentioned, lg)
+				.addProperty(Ctalkology.hasLocation, loc)
+				.addProperty(Ctalkology.hasTwitterClient, tc);
+
+		
+	}
+	
 	public static void main(String... args) {
 		// // This also works for default union graph ....
 		// TDB.getContext().setTrue(TDB.symUnionDefaultGraph) ;
@@ -44,47 +97,40 @@ public class Database {
 		// ;
 		// Model model = TDBFactory.assembleModel(assemblerFile) ;
 		// model.close();
-		String directory = "TDB-0.8.10/work/data/project2";
-		Model model = TDBFactory.createModel(directory);
-		// create the resource and add the property
-		Resource johnSmith = model.createResource("http://somewhere/JohnSmith");
-		johnSmith.addProperty(VCARD.FN, "John Smith");
 		
-		model.removeAll();
-		
-		Resource loc = model.createResource(Ctalkology.Location)
-			.addProperty(Ctalkology.city, "New York")
-			.addLiteral(Ctalkology.latitude, 40.7141667)
-			.addLiteral(Ctalkology.longitude, -74.0063889)
-			.addLiteral(Ctalkology.population, 8);
-		
-		Resource loc2 = model.createResource(Ctalkology.Location)
-			.addProperty(Ctalkology.city, "San Francisco")
-			.addLiteral(Ctalkology.latitude, 37.775)
-			.addLiteral(Ctalkology.longitude, -122.4183333)
-			.addLiteral(Ctalkology.population, 100);
-		
-		Resource ev = model.createResource(Ctalkology.Event)
-			.addLiteral(FOAF.name, "Calevent")
-			.addProperty(Ctalkology.hasLocation, loc2);
-		
-		Resource tc = model.createResource(Ctalkology.TwitterClient)
-			.addLiteral(FOAF.name, "Tweetie");
-		Resource lg = model.createResource(Ctalkology.Celebrity)
-			.addLiteral(FOAF.name, "Lady Gaga")
-			.addProperty(Ctalkology.hasTwitterClient, tc)
-			.addProperty(Ctalkology.hasEvent, ev)
-			.addProperty(Ctalkology.hasLocation, loc);
-		Resource lgfan = model.createResource(Ctalkology.TwitterUser)
-			.addLiteral(FOAF.name, "Gagaga")
-			.addProperty(Ctalkology.follows, lg)
-			.addProperty(Ctalkology.hasLocation, loc2);
-		Resource lgfan2 = model.createResource(Ctalkology.TwitterUser)
-			.addLiteral(FOAF.name, "Kakaka")
-			.addProperty(Ctalkology.mentioned, lg)
-			.addProperty(Ctalkology.hasLocation, loc)
-			.addProperty(Ctalkology.hasTwitterClient, tc);
+		/**
+		 * Resource loc = model.createResource(Ctalkology.Location)
+		 * .addProperty(Ctalkology.city, "New York")
+		 * .addLiteral(Ctalkology.latitude, 40.7141667)
+		 * .addLiteral(Ctalkology.longitude, -74.0063889)
+		 * .addLiteral(Ctalkology.population, 8);
+		 * 
+		 * Resource loc2 = model.createResource(Ctalkology.Location)
+		 * .addProperty(Ctalkology.city, "San Francisco")
+		 * .addLiteral(Ctalkology.latitude, 37.775)
+		 * .addLiteral(Ctalkology.longitude, -122.4183333)
+		 * .addLiteral(Ctalkology.population, 100);
+		 * 
+		 * Resource ev = model.createResource(Ctalkology.Event)
+		 * .addLiteral(FOAF.name, "Calevent")
+		 * .addProperty(Ctalkology.hasLocation, loc2);
+		 * 
+		 * Resource tc = model.createResource(Ctalkology.TwitterClient)
+		 * .addLiteral(FOAF.name, "Tweetie"); Resource lg =
+		 * model.createResource(Ctalkology.Celebrity) .addLiteral(FOAF.name,
+		 * "Lady Gaga") .addProperty(Ctalkology.hasTwitterClient, tc)
+		 * .addProperty(Ctalkology.hasEvent, ev)
+		 * .addProperty(Ctalkology.hasLocation, loc); Resource lgfan =
+		 * model.createResource(Ctalkology.TwitterUser) .addLiteral(FOAF.name,
+		 * "Gagaga") .addProperty(Ctalkology.follows, lg)
+		 * .addProperty(Ctalkology.hasLocation, loc2); Resource lgfan2 =
+		 * model.createResource(Ctalkology.TwitterUser) .addLiteral(FOAF.name,
+		 * "Kakaka") .addProperty(Ctalkology.mentioned, lg)
+		 * .addProperty(Ctalkology.hasLocation, loc)
+		 * .addProperty(Ctalkology.hasTwitterClient, tc);
+		 **/
 		model.close();
+
 	}
 
 	/** Example setup - in-memory dataset with two graphs, one triple in each */
