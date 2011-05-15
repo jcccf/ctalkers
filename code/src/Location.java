@@ -2,33 +2,31 @@
 
 public class Location {
 
-	String name;
+	public String name;
 	
-	String latd = "";
-	String latm = "";
-	String latns = "";
-	String lats = "";
-	String longd = "";
-	String longew = "";
-	String longm = "";
-	String longs = "";
-	String populationTotal = "";
-	String areaTotal = "";
-	
-	public static final int fieldCount = 10;
+	public double longitude;
+	public double latitude;
+	public int populationTotal;
+	public int areaTotal;
+	public static int fieldCount = 10;
 	
 	public Location(String n, String[] f) {
 		name = n;
-		latd = f[0];
-		latm = f[1];
-		latns = f[2];
-		lats = f[3];
-		longd = f[4];
-		longew = f[5];
-		longm = f[6];
-		longs = f[7];
-		populationTotal = f[8];
-		areaTotal = f[9];
+		
+		
+		double[] ls = new double[8];
+		for (int i = 0; i < 8; i++) {
+			if(i != 2 && i != 5)
+				ls[i] = Float.parseFloat(f[i]);
+		}
+		
+		populationTotal = Integer.parseInt(f[8]);
+		areaTotal = Integer.parseInt(f[9]);
+		
+		int ns = (f[2].equals("N")) ? 1 : -1;
+		int ew = (f[5].equals("E")) ? 1 : -1;
+		latitude = (ls[0] + ls[1] / 60 + ls[3]/3600) * ns;
+		longitude = (ls[4] + ls[6] / 60 + ls[7]/3600) * ew;
 	}
 	
 	
@@ -36,14 +34,8 @@ public class Location {
 	public String toString() {
 		return "{" +
 		name + ", " +
-		latd + "," +
-		latm + "," +
-		latns + "," +
-		lats + "," +
-		longd + "," +
-		longew + "," +
-		longm + "," +
-		longs + "," +
+		latitude + ", " +
+		longitude + ", " +
 		populationTotal + "," +
 		areaTotal + "}";
 	}
