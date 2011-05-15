@@ -23,7 +23,7 @@ public class Location {
 		latitude = lat;
 		city = ct;
 		country = ctr;
-		set_name();
+		setName();
 	}
 	
 	public Location(String n, String[] f) {
@@ -45,7 +45,7 @@ public class Location {
 		longitude = (ls[4] + ls[6] / 60 + ls[7]/3600) * ew;
 	}
 	
-	public boolean set_name() {
+	public boolean setName() {
 		if (!(city.equals(""))) 
 			name = city;
 		else
