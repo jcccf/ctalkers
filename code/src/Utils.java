@@ -69,8 +69,21 @@ public class Utils {
 	}
 
 	public static String cleanLocation(String loc){
-		String[] tokens = loc.split("[,/]+");
-		return tokens[0].replaceAll(" ", "_");
+		if(loc.length() > 0){
+			String[] tokens = loc.split("[,/]+");
+			String s = tokens[0].replaceAll(" ", "_").trim();
+			final StringBuilder result = new StringBuilder(s.length());
+			String[] words = s.split("\\s");
+			for(int i=0,l=words.length;i<l;++i) {
+			  if(i>0) result.append(" ");      
+			  result.append(Character.toUpperCase(words[i].charAt(0)))
+			        .append(words[i].substring(1));
+	
+			}
+			return result.toString();
+		}
+		else
+			return "";
 	}
 	
 }
