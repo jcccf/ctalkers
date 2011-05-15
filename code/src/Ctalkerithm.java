@@ -39,7 +39,7 @@ public class Ctalkerithm {
 		sourceXPath.addNamespace("twitter", "http://api.twitter.com/");
 
 		// for follower id's
-		XPath idXPath = XPath.newInstance("//id");
+		XPath userXPath = XPath.newInstance("//user");
 
 		int i=0;
 		for(String celeb: celebNames) {
@@ -57,21 +57,21 @@ public class Ctalkerithm {
 			for(String uriString:doXPath(mentionDoc, uriXPath)) {
 				String screenName = uriString.replaceFirst("http://twitter.com/", "");
 				Person talker = new Person(screenName);
-				talker.twitterClient = userSourceList.get(j);
+				talker.setClient(userSourceList.get(j));
 				celebs.get(i).talkers.add(talker);
 				j++;
 			}			
 
 
-			System.out.println(celeb + " tweeters: " + Utils.join(celebs.get(i).talkers, ", "));
+			//System.out.println(celeb + " tweeters: " + Utils.join(celebs.get(i).talkers, ", "));
 
 			// get the celeb stalkers (followers)
 			
 			 // Site isn't responding for celeb followers (code is working fine though)
-			/*
+			
 			SAXBuilder f = new SAXBuilder();
 			Document followDoc = null;
-			String celebFollowURL = "http://api.twitter.com/1/followers/ids.xml?screen_name=" + celeb;
+			String celebFollowURL = "http://api.twitter.com/1/statuses/followers.xml?screen_name=" + celeb;
 			try {
 				followDoc = f.build(Utils.getURLStream(celebFollowURL));
 			} catch(Exception e) {
@@ -79,16 +79,29 @@ public class Ctalkerithm {
 			}
 
 			if(followDoc == null) continue;
-
-			ArrayList<String> stalkerIDs = doXPath(followDoc, idXPath);
-			for(String id:stalkerIDs) {
-				Person talker = new Person();
-				talker.twitterID = id;
-				celebs.get(i).stalkers.add(talker);
-			}
 			
+			List<Element> stalkerElements = userXPath.selectNodes(followDoc);
+			
+			XPath idXPath = XPath.newInstance("./id");
+			XPath nameXPath = XPath.newInstance(".//name");
+			XPath userClientXPath = XPath.newInstance(".//status/source");		
+
+			for(Element stalkerE:stalkerElements) {
+				List<Element> stalkerIDList = idXPath.selectNodes(stalkerE);
+				List<Element> nameList = nameXPath.selectNodes(stalkerE);
+				List<Element> clientList = userClientXPath.selectNodes(stalkerE);
+				
+				Person stalker = new Person();
+				
+				stalker.twitterID = (stalkerIDList.size() > 0) ? stalkerIDList.get(0).getValue() : null;
+				stalker.screenName = (nameList.size() > 0) ? nameList.get(0).getValue() : null;
+				String client = (clientList.size() > 0) ? clientList.get(0).getValue() : null;
+				if(client != null) stalker.setClient(client);
+				
+				celebs.get(i).stalkers.add(stalker);
+			}
 			System.out.println(celeb + " stalker ids: " + Utils.join(celebs.get(i).stalkers, ", "));
-			*/
+			
 			i++;
 		}
 
@@ -155,7 +168,6 @@ public class Ctalkerithm {
 
 	public static ArrayList<String> doXPath(Document doc, XPath xPathSearch) throws Exception {
 		List<Element> xPathResult = xPathSearch.selectNodes(doc);
-
 		ArrayList<String> stringResult = new ArrayList<String>();
 
 		for(Element e:xPathResult) {
