@@ -1,0 +1,6 @@
+put this in .bashrc
+export JOSEKIROOT=.../ctalkers/Joseki-3.4.3
+
+then run bin/rdfserver
+
+http://localhost:2020/
