@@ -3,3 +3,4 @@
 *.class
 *.metadata
 *.classpath
+*catalog-v001.xml
