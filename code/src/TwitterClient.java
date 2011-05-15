@@ -104,8 +104,6 @@ public class TwitterClient {
 			String id = xPath.evaluate("/users/user/id", inputSource);
 			
 			
-			person.location = new Location(location);
-
 			// Either retrieve the location from the hashmap, or create a new one
 			String cleanedLocation = Utils.cleanLocation(rawLocation);
 			Location locationObj  = locationMap.get(cleanedLocation);
