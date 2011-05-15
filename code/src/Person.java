@@ -17,6 +17,13 @@ public class Person {
 
 	public Person() {
 	}
+	
+	public void setClient(String clientURI) {
+		twitterClient = clientURI.replaceAll("\\<.*?>","");
+	}
+	
+	
+	
 
 
 	public String toString() {
