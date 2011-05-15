@@ -1,16 +1,10 @@
 
 public class Evt {
-	float longitude;
-	float latitude;
-	String city;
-	String country;
 	String title;
+	Location location;
 	
-	public Evt(float lg, float lat, String ct, String ctr, String tt) {
-		longitude = lg;
-		latitude = lat;
-		city = ct;
-		country = ctr;
+	public Evt(String tt, Location loc) {
+		location = loc;
 		title = tt;
 	}
 }
