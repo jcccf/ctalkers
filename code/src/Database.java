@@ -150,7 +150,7 @@ public class Database {
 	
 	public static void main(String... args) {
 		
-		Database db = new Database(LIST OF CELEBRITIES);
+		Database db = new Database(null); // TODO This should not be null!
 		db.run();
 		
 //		// Sample Code
