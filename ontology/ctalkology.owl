@@ -145,7 +145,7 @@
 
     <owl:DatatypeProperty rdf:about="&ctalkology;latitude">
         <rdfs:domain rdf:resource="&ctalkology;Location"/>
-        <rdfs:range rdf:resource="&xsd;float"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
     </owl:DatatypeProperty>
     
 
@@ -154,7 +154,7 @@
 
     <owl:DatatypeProperty rdf:about="&ctalkology;longitude">
         <rdfs:domain rdf:resource="&ctalkology;Location"/>
-        <rdfs:range rdf:resource="&xsd;float"/>
+        <rdfs:range rdf:resource="&xsd;double"/>
     </owl:DatatypeProperty>
     
 
@@ -285,19 +285,19 @@
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
+            <rdf:Description rdf:about="&ctalkology;Celebrity"/>
             <rdf:Description rdf:about="&ctalkology;Event"/>
             <rdf:Description rdf:about="&ctalkology;Location"/>
             <rdf:Description rdf:about="&ctalkology;TwitterClient"/>
-            <rdf:Description rdf:about="&ctalkology;TwitterUser"/>
         </owl:members>
     </rdf:Description>
     <rdf:Description>
         <rdf:type rdf:resource="&owl;AllDisjointClasses"/>
         <owl:members rdf:parseType="Collection">
-            <rdf:Description rdf:about="&ctalkology;Celebrity"/>
             <rdf:Description rdf:about="&ctalkology;Event"/>
             <rdf:Description rdf:about="&ctalkology;Location"/>
             <rdf:Description rdf:about="&ctalkology;TwitterClient"/>
+            <rdf:Description rdf:about="&ctalkology;TwitterUser"/>
         </owl:members>
     </rdf:Description>
 </rdf:RDF>

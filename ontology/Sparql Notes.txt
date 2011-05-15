@@ -106,7 +106,7 @@ Who lives in locations that are cities with populations greater than 5? (OKAY)
         FILTER (?pop > 5)
     }
 
-Who lives in some range of lat/long coordinates?
+Who lives in some range of lat/long coordinates? (OKAY)
 
     SELECT ?name
     WHERE {
@@ -116,17 +116,17 @@ Who lives in some range of lat/long coordinates?
       ?location
         ct:latitude ?lat;
         ct:longitude ?lon.
-        FILTER (?lat < 123.4)
-        FILTER (?lat > 100.0)
-        FILTER (?lon < 100.0)
-        FILTER (?lon > 0.0)
+        FILTER (?lat < 45.0)
+        FILTER (?lat > 40.0)
+        FILTER (?lon < -70.0)
+        FILTER (?lon > -80.0)
     }
 
 Return user and event pairs where 
   an event is by a celebrity the user mentions or follows 
     and is in the same location as the user.
     
-    SELECT ?username, ?celebrityname, ?eventname
+    SELECT ?username ?celebrityname ?eventname
     WHERE {
       {?user
         foaf:name ?username;
@@ -150,18 +150,22 @@ Return user and event pairs where
         ct:hasLocation ?location.}  
     }
 
-Return a list of users who follow a celebrity and use the same Twitter Client as the celebrity.
+Return a list of users who mentioned a celebrity and use the same Twitter Client as the celebrity.
 
-    SELECT ?username, ?celebrityname
+    SELECT ?username ?celebrityname
     WHERE {
       ?user
         foaf:name ?username;
-        ct:follows ?celebrity;
+        ct:mentioned ?celebrity;
         ct:hasTwitterClient ?client.
       ?celebrity
         foaf:name ?celebrityname;
         ct:hasTwitterClient ?client.
     }
+
+
+============================
+============================
 
 
 To Restrict to Some Lat/Long
