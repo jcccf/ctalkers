@@ -128,11 +128,11 @@ public class TwitterClient {
 
 	public static void main(String[] args) throws Exception {
 		
-		Person p = new Person("smoseson");
-//		p.twitterID = "783214";
-		ArrayList<Person> test = new ArrayList<Person>();
-		test.add(p);
-		addUserLocations(test);
+//		Person p = new Person("smoseson");
+////		p.twitterID = "783214";
+//		ArrayList<Person> test = new ArrayList<Person>();
+//		test.add(p);
+//		addUserLocations(test);
 //		List<String> usr_ids = new ArrayList<String>();
 //		usr_ids.add("783214");
 //		usr_ids.add("6253282");
