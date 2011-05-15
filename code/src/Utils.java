@@ -68,6 +68,9 @@ public class Utils {
 		return joined;
 	}
 
-	
+	public static String cleanLocation(String loc){
+		String[] tokens = loc.split("[,/]+");
+		return tokens[0].replaceAll(" ", "_");
+	}
 	
 }
