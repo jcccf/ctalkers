@@ -133,7 +133,7 @@ public class Location {
 				locFields[k++] = res.get(owlProp).toString();
 			}
 			
-			loc.addLongAndLat(locFields);
+			//loc.addLongAndLat(locFields);
 			
 			qe.close();
 		} catch(Exception e) {
@@ -141,7 +141,7 @@ public class Location {
 		}
 		
 		
-		return loc;
+		//return loc;
 
 	}
 	
