@@ -50,18 +50,16 @@ public class LastFm {
 			artists.add(real_name);
 		}
 
-		List<Celeb> celebs = evt_datails(artists);
+		//List<Celeb> celebs = evt_details(artists);
 	}
 	
-	public static List<Celeb> evt_datails(List<String> artists) {
+	public static void add_details_to_evt(List<Person> celebs) {
 		String key = "4292b0fbbdc718549158d5fbd6d19686";
-		List<Celeb> celebs = new ArrayList<Celeb>();
-		for (String artist : artists) {
-			Collection<Event> evts = Artist.getEvents(artist, key);
-			Celeb celeb = new Celeb(artist);
-			celebs.add(celeb);
+		for (Person d : celebs) {
+			Celeb c = (Celeb) d;
+			Collection<Event> evts = Artist.getEvents(c.lastFmName, key);
 			List<Evt> ets = new ArrayList<Evt>();
-			celeb.events = ets;
+			c.events = ets;
 			for (Event evt : evts) {
 				//evt.getTitle()
 				float longitude = evt.getVenue().getLongitude();
@@ -69,12 +67,13 @@ public class LastFm {
 				String city = evt.getVenue().getCity();
 				String country = evt.getVenue().getCountry();
 				String title = evt.getTitle();
-				System.out.println("artists: " + artist + " title: " + title);
-				Evt et = new Evt(longitude, latitude, city, country, title);
+				System.out.println("artists: " + c.lastFmName + " title: " + title);
+
+				Location loc = new Location(longitude, latitude, city, country);
+				Evt et = new Evt(title, loc);
 				ets.add(et);
 			}
 		}
-		return celebs;
 	}
 	
 }

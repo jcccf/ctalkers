@@ -21,12 +21,16 @@ public class Ctalkerithm {
 		// Read celebrities in and get twitter XML for each
 //		String[] celebNames = Utils.readFile("../ontology/celebrities.txt").split("\n");
 		String[] celebNames = Utils.readFile("../ontology/celebSmall.txt").split("\n");
+		String[] lastfmNames = Utils.readFile("../ontology/lastfmSmall.txt").split("\n");
 		
 		ArrayList<Person> celebs = new ArrayList<Person>();
-		for(String sn: celebNames) {
-			celebs.add(new Celeb(sn));
+		for (int i = 0; i < celebNames.length; i++) {
+			String celeb_name = celebNames[i];
+			Celeb celeb = new Celeb(celeb_name);
+			celeb.lastFmName = lastfmNames[i];
+			celebs.add(celeb);
 		}
-
+		
 		// use xpath to extract all the mention tweeter's <uri>, and <twitter:source>
 		XPath uriXPath = XPath.newInstance("//atom:author/atom:uri");
 		uriXPath.addNamespace("atom", "http://www.w3.org/2005/Atom");
@@ -106,6 +110,9 @@ public class Ctalkerithm {
 			TwitterClient.addUserLocations(((Celeb) celeb).stalkers, locationMap);
 		}
 
+		LastFm.add_details_to_evt(celebs);
+		Database db = new Database(celebs);
+		db.run();
 	}
 
 	public static ArrayList<String> doXPath(Document doc, XPath xPathSearch) throws Exception {
