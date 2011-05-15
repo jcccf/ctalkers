@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
 
 public class TwitterClient {
 	
-	public static Map<String, String> usr_lookup(List<String> usrs) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, XPathExpressionException {
+	public static void addUserLocations(ArrayList<Person> usrs) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, XPathExpressionException {
 
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
 				// the consumer key of this app (replace this with yours)
@@ -49,9 +49,19 @@ public class TwitterClient {
 
 		Map<String, String> loc_name = new HashMap<String, String>();
 		
-		for (String usr_id : usrs) {
+		int i=0;
+		for (Person person : usrs) {
+			String url_str = null;
+			if(person.twitterID != null) { 
+				url_str = "http://api.twitter.com/1/users/lookup.xml?user_id="+ person.twitterID;
+			} else if(person.screenName != null) {
+				url_str = "http://api.twitter.com/1/users/lookup.json?screen_name="+ person.screenName;
+			} else {
+				i++;
+				continue;
+			}
+			
 			// create a request that requires authentication
-			String url_str = "http://api.twitter.com/1/users/lookup.xml?user_id="+ usr_id;
 			URL url = new URL(url_str);
 			HttpURLConnection request = (HttpURLConnection) url.openConnection();
 
@@ -83,23 +93,26 @@ public class TwitterClient {
 			
 			InputSource inputSource = new InputSource(new StringReader(data));
 			String location = xPath.evaluate("/users/user/location", inputSource);
-			System.out.println(location);
 			
 			inputSource = new InputSource(new StringReader(data));
 			String name = xPath.evaluate("/users/user/name", inputSource);
-			System.out.println(name);
 			
+			person.location = new Location(location);
 			
+			person.actualName = name;
 			
-			loc_name.put(location, name);
+			System.out.println(person);
+
+//			loc_name.put(location, name);
+			i++;
 		}
-		return loc_name;
+//		return loc_name;
 	}
 
-	public static void main(String[] args) throws Exception {
-		List<String> usr_ids = new ArrayList<String>();
-		usr_ids.add("783214");
-		usr_ids.add("6253282");
-		Map<String,String> loc_name = usr_lookup(usr_ids);
-	}
+//	public static void main(String[] args) throws Exception {
+//		List<String> usr_ids = new ArrayList<String>();
+//		usr_ids.add("783214");
+//		usr_ids.add("6253282");
+//		Map<String,String> loc_name = addUserLocation(usr_ids);
+//	}
 }

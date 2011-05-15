@@ -2,6 +2,7 @@
 
 public class Person {
 
+	String actualName;
 
 	String screenName;
 	String twitterID;

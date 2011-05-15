@@ -17,6 +17,10 @@ public class Location {
 	
 	public static final int fieldCount = 10;
 	
+	public Location(String n) {
+		name = n;
+	}
+	
 	public Location(String n, String[] f) {
 		name = n;
 		latd = f[0];
