@@ -49,6 +49,13 @@ tdb:GraphTDB    rdfs:subClassOf  ja:Model      .
    a ja:RDFDataset;  
    ja:defaultGraph [
       a ja:InfModel;  
+      ja:reasoner [  
+         ja:reasonerClass "org.mindswap.pellet.jena.PelletReasonerFactory";  
+         ja:schema [
+            a ja:MemoryModel;
+            ja:content [ja:externalContent "../ontology/ctalkology.owl" ];
+         ];
+      ];
       ja:baseModel [ 
          a tdb:GraphTDB;
          tdb:location "../TDB-0.8.10/work/data/project2";

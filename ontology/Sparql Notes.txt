@@ -1,14 +1,22 @@
 http://www.w3.org/TR/rdf-sparql-query/
 
 General
-=========
+=======
 Select all triples.
 
     SELECT * WHERE {?X ?Y ?Z.}
+    
+    
+Prefixes
+=========
+PREFIX rdfs: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX ct: <http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX xs: <http://www.w3.org/2001/XMLSchema#>
 
 Questions
 =========
-Who follows Lady Gaga?
+Who follows Lady Gaga? (OKAY)
 
     SELECT ?username
     WHERE {
@@ -17,24 +25,45 @@ Who follows Lady Gaga?
         ct:follows ?celebrity.
       ?celebrity
         rdfs:type ct:Celebrity;
-        foaf:name "Lady Gaga".
+        foaf:name "Lady Gaga" ^^ xs:string.
+    }
+    
+Who follows who? (OKAY, demonstrates reasoner is working)
+    
+    SELECT ?username ?celebname
+    WHERE {
+      ?user
+        foaf:name ?username.
+      ?celebrity
+        foaf:name ?celebname;
+        ct:followedBy ?user.
     }
 
-Who mentions Lady Gaga?
+Who mentions who? (OKAY, demonstrates reasoner is working)
 
+    SELECT ?username ?celebname
+    WHERE {
+      ?user
+        foaf:name ?username.
+      ?celebrity
+        foaf:name ?celebname;
+        ct:mentionedBy ?user.
+    }
+    
+Who mentions Lady Gaga? (OKAY)
+    
     SELECT ?username
     WHERE {
       ?user
         foaf:name ?username.
-      ?celebrity 
-        ct:mentionedBy ?user;
-        rdfs:type ct:Celebrity;
-        foaf:name "Lady Gaga".
+      ?celebrity
+        foaf:name "Lady Gaga" ^^ xs:string;
+        ct:mentionedBy ?user.
     }
 
-Which celebrities use which Twitter clients?
+Which celebrities use which Twitter clients? (OKAY)
 
-    SELECT ?celebrityname, ?clientname
+    SELECT ?celebrityname ?clientname
     WHERE {
       ?celebrity 
         foaf:name ?celebrityname;
@@ -44,7 +73,7 @@ Which celebrities use which Twitter clients?
         foaf:name ?clientname.
     }
 
-Who follows/mentions a celebrity and lives in the same place as the celebrity?
+Who follows/mentions a celebrity and lives in the same place as the celebrity? (OKAY)
 
     SELECT ?username
     WHERE {
@@ -53,17 +82,29 @@ Who follows/mentions a celebrity and lives in the same place as the celebrity?
         ct:follows ?celebrity;
         ct:hasLocation ?location.
       ?celebrity
-        foaf:name "Lady Gaga";
-        hasLocation ?location.} UNION
+        foaf:name "Lady Gaga" ^^ xs:string;
+        ct:hasLocation ?location.} UNION
       {?user
         foaf:name ?username;
         ct:mentioned ?celebrity;
         ct:hasLocation ?location.
       ?celebrity
-        foaf:name "Lady Gaga";
+        foaf:name "Lady Gaga" ^^ xs:string;
         ct:hasLocation ?location.}
     }
 
+Who lives in locations that are cities with populations greater than 5? (OKAY)
+
+    SELECT ?username ?location ?city
+    WHERE {
+      ?user
+        foaf:name ?username;
+        ct:hasLocation ?location.
+      ?location 
+        ct:city ?city;
+        ct:population ?pop.
+        FILTER (?pop > 5)
+    }
 
 Who lives in some range of lat/long coordinates?
 
@@ -121,12 +162,6 @@ Return a list of users who follow a celebrity and use the same Twitter Client as
         foaf:name ?celebrityname;
         ct:hasTwitterClient ?client.
     }
-
-SPARQL
-======
-PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-PREFIX ct: <http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#>
-
 
 
 To Restrict to Some Lat/Long

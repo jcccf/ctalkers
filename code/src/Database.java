@@ -12,6 +12,7 @@ import com.hp.hpl.jena.rdf.model.Model;
 import com.hp.hpl.jena.rdf.model.Resource;
 import com.hp.hpl.jena.sparql.core.Quad;
 import com.hp.hpl.jena.sparql.sse.SSE;
+import com.hp.hpl.jena.sparql.vocabulary.FOAF;
 import com.hp.hpl.jena.tdb.TDB;
 import com.hp.hpl.jena.tdb.TDBFactory;
 import com.hp.hpl.jena.tdb.nodetable.NodeTable;
@@ -48,7 +49,26 @@ public class Database {
 		// create the resource and add the property
 		Resource johnSmith = model.createResource("http://somewhere/JohnSmith");
 		johnSmith.addProperty(VCARD.FN, "John Smith");
+		
 		model.removeAll();
+		
+		Resource loc = model.createResource(Ctalkology.Location)
+			.addProperty(Ctalkology.city, "New York")
+			.addLiteral(Ctalkology.population, 8);
+		
+		Resource tc = model.createResource(Ctalkology.TwitterClient)
+			.addLiteral(FOAF.name, "Tweetie");
+		Resource lg = model.createResource(Ctalkology.Celebrity)
+			.addLiteral(FOAF.name, "Lady Gaga")
+			.addProperty(Ctalkology.hasTwitterClient, tc)
+			.addProperty(Ctalkology.hasLocation, loc);
+		Resource lgfan = model.createResource(Ctalkology.TwitterUser)
+			.addLiteral(FOAF.name, "Gagaga")
+			.addProperty(Ctalkology.follows, lg);
+		Resource lgfan2 = model.createResource(Ctalkology.TwitterUser)
+			.addLiteral(FOAF.name, "Kakaka")
+			.addProperty(Ctalkology.mentioned, lg)
+			.addProperty(Ctalkology.hasLocation, loc);
 		model.close();
 	}
 
