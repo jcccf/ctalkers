@@ -53,7 +53,7 @@ public class LastFm {
 		//List<Celeb> celebs = evt_details(artists);
 	}
 	
-	public static void evt_details(List<Person> celebs) {
+	public static void add_details_to_evt(List<Person> celebs) {
 		String key = "4292b0fbbdc718549158d5fbd6d19686";
 		for (Person d : celebs) {
 			Celeb c = (Celeb) d;

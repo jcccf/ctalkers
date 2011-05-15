@@ -110,7 +110,7 @@ public class Ctalkerithm {
 			TwitterClient.addUserLocations(((Celeb) celeb).stalkers, locationMap);
 		}
 
-		LastFm.evt_details(celebs);
+		LastFm.add_details_to_evt(celebs);
 		Database db = new Database(celebs);
 		db.run();
 	}
