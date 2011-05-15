@@ -10,6 +10,10 @@ public class Location {
 	public int areaTotal;
 	public static int fieldCount = 10;
 	
+	public Location(String n) {
+		name = n;
+	}
+	
 	public Location(String n, String[] f) {
 		name = n;
 		

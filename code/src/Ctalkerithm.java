@@ -24,9 +24,10 @@ public class Ctalkerithm {
 	public static void main(String[] args) throws Exception {
 
 		// Read celebrities in and get twitter XML for each
-		String[] celebNames = Utils.readFile("../ontology/celebrities.txt").split("\n");
+//		String[] celebNames = Utils.readFile("../ontology/celebrities.txt").split("\n");
+		String[] celebNames = Utils.readFile("../ontology/celebSmall.txt").split("\n");
 		
-		ArrayList<Celeb> celebs = new ArrayList<Celeb>();
+		ArrayList<Person> celebs = new ArrayList<Person>();
 		for(String sn: celebNames) {
 			celebs.add(new Celeb(sn));
 		}
@@ -49,7 +50,6 @@ public class Ctalkerithm {
 			String celebMentionURL = "http://search.twitter.com/search.atom?q=@" + celeb;
 			Document mentionDoc = m.build(Utils.getURLStream(celebMentionURL));
 
-
 			// extract the screen_names
 			ArrayList<String> userSourceList = doXPath(mentionDoc, sourceXPath);
 
@@ -58,17 +58,14 @@ public class Ctalkerithm {
 				String screenName = uriString.replaceFirst("http://twitter.com/", "");
 				Person talker = new Person(screenName);
 				talker.setClient(userSourceList.get(j));
-				celebs.get(i).talkers.add(talker);
+				((Celeb) celebs.get(i)).talkers.add(talker);
 				j++;
 			}			
-
 
 			//System.out.println(celeb + " tweeters: " + Utils.join(celebs.get(i).talkers, ", "));
 
 			// get the celeb stalkers (followers)
-			
-			 // Site isn't responding for celeb followers (code is working fine though)
-			
+						
 			SAXBuilder f = new SAXBuilder();
 			Document followDoc = null;
 			String celebFollowURL = "http://api.twitter.com/1/statuses/followers.xml?screen_name=" + celeb;
@@ -98,12 +95,22 @@ public class Ctalkerithm {
 				String client = (clientList.size() > 0) ? clientList.get(0).getValue() : null;
 				if(client != null) stalker.setClient(client);
 				
-				celebs.get(i).stalkers.add(stalker);
+				((Celeb) celebs.get(i)).stalkers.add(stalker);
 			}
-			System.out.println(celeb + " stalker ids: " + Utils.join(celebs.get(i).stalkers, ", "));
+			System.out.println(celeb + " stalker ids: " + Utils.join(((Celeb) celebs.get(i)).stalkers, ", "));
 			
 			i++;
 		}
+		
+		
+		// Find everyone's location and actual name
+		TwitterClient.addUserLocations(celebs);
+		
+		for(Person celeb:celebs) {
+			TwitterClient.addUserLocations(((Celeb) celeb).talkers);
+			TwitterClient.addUserLocations(((Celeb) celeb).stalkers);
+		}
+		
 
 		// Possibly alter location field by searching for it
 		//        search_xml = Nokogiri::XML(open("http://api.search.live.net/xml.aspx?Appid=D922B026428E58D0B1B38C3CB94E227BF6B113BB&query=#{CGI.escape(search_query)}&sources=web"))
