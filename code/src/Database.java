@@ -2,7 +2,6 @@ import java.util.*;
 
 import org.openjena.atlas.iterator.Filter;
 import org.openjena.atlas.lib.Tuple;
-
 import com.hp.hpl.jena.graph.Node;
 import com.hp.hpl.jena.query.Dataset;
 import com.hp.hpl.jena.query.Query;
@@ -34,57 +33,75 @@ import com.hp.hpl.jena.vocabulary.VCARD;
 
 public class Database {
 	private static String graphToHide = "http://example/g2";
-
-	public static void add_to_database(List<Location> locs, List<Celeb> celebs) {
+	
+	Map<String,Resource> loc_to_res;
+	Map<String,Resource> tcl_to_res;
+	Map<String,Resource> per_to_res;
+	List<Celeb> celebs;
+	Model model;
+	
+	public Database(List<Celeb> celebs){
+		this.celebs = celebs;
+		loc_to_res = new HashMap<String,Resource>();
+		tcl_to_res = new HashMap<String,Resource>();
+		per_to_res = new HashMap<String,Resource>();
 		String directory = "TDB-0.8.10/work/data/project2";
-		Model model = TDBFactory.createModel(directory);
+		model = TDBFactory.createModel(directory);
 		model.removeAll();
-		
-		// Initialize Maps
-		Map<Location,Resource> loc_to_res = new HashMap<Location,Resource>();
-		Map<String,Resource> tcl_to_res = new HashMap<String,Resource>();
-		Map<String,Resource> per_to_res = new HashMap<String,Resource>();
-		
-		// Create Resource Locations
-		for (Location l : locs) {
-			Resource r = model.createResource(Ctalkology.Location)
-			.addProperty(Ctalkology.country, l.country) //TODO!!!!!!!!!!!!!!
-			.addProperty(Ctalkology.city, l.city)
-			.addLiteral(Ctalkology.latitude, l.latitude)
-			.addLiteral(Ctalkology.longitude, l.longitude)
-			.addLiteral(Ctalkology.population, l.populationTotal)
-			.addLiteral(Ctalkology.landArea, l.areaTotal);
-			loc_to_res.put(l,r);
+	}
+	
+	private Resource setLocation(Resource zzz, Location l){
+		if(l != null){
+			Resource locres = null;
+			if(loc_to_res.containsKey(l.name)){
+				locres = loc_to_res.get(l.name);
+			}
+			else{
+				Resource r = model.createResource(Ctalkology.Location)
+					.addProperty(Ctalkology.country, l.country)
+					.addProperty(Ctalkology.city, l.city)
+					.addLiteral(Ctalkology.latitude, l.latitude)
+					.addLiteral(Ctalkology.longitude, l.longitude)
+					.addLiteral(Ctalkology.population, l.populationTotal)
+					.addLiteral(Ctalkology.landArea, l.areaTotal);
+				loc_to_res.put(l.name,r);
+				locres = r;
+			}
+			zzz.addProperty(Ctalkology.hasLocation, locres);
 		}
-		
-		
+		return zzz;
+	}
+	
+	private Resource setTwitterClient(Resource zzz, Person p){
+		if(p.twitterClient.length() > 0){
+			Resource tcl = null;
+			if(tcl_to_res.containsKey(p.twitterClient)){
+				tcl = tcl_to_res.get(p.twitterClient);
+			}
+			else{
+				tcl = model.createResource(Ctalkology.TwitterClient)
+					.addLiteral(FOAF.name, p.twitterClient);
+				tcl_to_res.put(p.twitterClient, tcl);
+			}
+			zzz.addProperty(Ctalkology.hasTwitterClient, tcl);
+		}
+		return zzz;
+	}
+	
+	public void run(){
 		for (Celeb c : celebs) {
-			
 			// Create Celebrity
 			Resource celeb_resource = model.createResource(Ctalkology.Celebrity)
 				.addLiteral(FOAF.name, c.actualName)
-				.addLiteral(Ctalkology.twitterID, c.twitterID)
-				.addProperty(Ctalkology.hasLocation, loc_to_res.get(c.location));
-			
-			// Add Twitter Client
-			if(c.twitterClient.length() > 0){
-				Resource tcl = null;
-				if(tcl_to_res.containsKey(c.twitterClient)){
-					tcl = tcl_to_res.get(c.twitterClient);
-				}
-				else{
-					tcl = model.createResource(Ctalkology.TwitterClient)
-						.addLiteral(FOAF.name,c.twitterClient);
-					tcl_to_res.put(c.twitterClient, tcl);
-				}
-				celeb_resource.addProperty(Ctalkology.hasTwitterClient, tcl);
-			}
+				.addLiteral(Ctalkology.twitterID, c.twitterID);
+			setTwitterClient(celeb_resource, c);
+			setLocation(celeb_resource, c.location);
 			
 			// Add Events
 			for (Evt e : c.events) {
 				Resource ev = model.createResource(Ctalkology.Event)
-					.addLiteral(FOAF.name, e.title)
-					.addProperty(Ctalkology.hasLocation, loc_to_res.get(e.location));
+					.addLiteral(FOAF.name, e.title);
+				setLocation(ev, e.location);
 				celeb_resource.addProperty(Ctalkology.hasEvent, ev);
 			}
 			
@@ -96,86 +113,45 @@ public class Database {
 				}
 				else{
 					ps = model.createResource(Ctalkology.TwitterUser);
-					if(p.location != null)
-						ps.addProperty(Ctalkology.hasLocation, loc_to_res.get(p.location));
 					if(p.actualName.length() > 0)
 						ps.addLiteral(FOAF.name, p.actualName);
 					if(p.twitterID != null)
 						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
-					if(p.twitterClient.length() > 0){
-						Resource tcl = null;
-						if(tcl_to_res.containsKey(p.twitterClient)){
-							tcl = tcl_to_res.get(p.twitterClient);
-						}
-						else{
-							tcl = model.createResource(Ctalkology.TwitterClient)
-								.addLiteral(FOAF.name,p.twitterClient);
-							tcl_to_res.put(p.twitterClient, tcl);
-						}
-						ps.addProperty(Ctalkology.hasTwitterClient, tcl);
-					}
+					setLocation(ps, p.location);
+					setTwitterClient(ps, p);
 					per_to_res.put(p.screenName, ps);
 				}
 				ps.addProperty(Ctalkology.mentioned, celeb_resource);
 			}
 			
 			// Add Followers
-			for (Person p : c.stalkers){
+			for (Person p : c.talkers){
 				Resource ps = null;
 				if(per_to_res.containsKey(p.screenName)){
 					ps = per_to_res.get(p.screenName);
 				}
 				else{
 					ps = model.createResource(Ctalkology.TwitterUser);
-					if(p.location != null)
-						ps.addProperty(Ctalkology.hasLocation, loc_to_res.get(p.location));
 					if(p.actualName.length() > 0)
 						ps.addLiteral(FOAF.name, p.actualName);
 					if(p.twitterID != null)
 						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
-					if(p.twitterClient.length() > 0){
-						Resource tcl = null;
-						if(tcl_to_res.containsKey(p.twitterClient)){
-							tcl = tcl_to_res.get(p.twitterClient);
-						}
-						else{
-							tcl = model.createResource(Ctalkology.TwitterClient)
-								.addLiteral(FOAF.name,p.twitterClient);
-							tcl_to_res.put(p.twitterClient, tcl);
-						}
-						ps.addProperty(Ctalkology.hasTwitterClient, tcl);
-					}
+					setLocation(ps, p.location);
+					setTwitterClient(ps, p);
 					per_to_res.put(p.screenName, ps);
 				}
-				ps.addProperty(Ctalkology.follows, celeb_resource);				
+				ps.addProperty(Ctalkology.follows, celeb_resource);
 			}
-			
 		}
-		
-		/*
-
-		Resource tc = model.createResource(Ctalkology.TwitterClient)
-				.addLiteral(FOAF.name, "Tweetie");
-		Resource lg = model.createResource(Ctalkology.Celebrity)
-				.addLiteral(FOAF.name, "Lady Gaga")
-				.addProperty(Ctalkology.hasTwitterClient, tc)
-				.addProperty(Ctalkology.hasEvent, ev)
-				.addProperty(Ctalkology.hasLocation, loc);
-		Resource lgfan = model.createResource(Ctalkology.TwitterUser)
-				.addLiteral(FOAF.name, "Gagaga")
-				.addProperty(Ctalkology.follows, lg)
-				.addProperty(Ctalkology.hasLocation, loc2);
-		Resource lgfan2 = model.createResource(Ctalkology.TwitterUser)
-				.addLiteral(FOAF.name, "Kakaka")
-				.addProperty(Ctalkology.mentioned, lg)
-				.addProperty(Ctalkology.hasLocation, loc)
-				.addProperty(Ctalkology.hasTwitterClient, tc);
-		model.close()
-		 **/
-		
+			
+		model.close();
 	}
 	
 	public static void main(String... args) {
+		
+		Database db = new Database(LIST OF CELEBRITIES);
+		db.run();
+		
 		// // This also works for default union graph ....
 		// TDB.getContext().setTrue(TDB.symUnionDefaultGraph) ;
 		//
@@ -218,7 +194,6 @@ public class Database {
 		 * .addProperty(Ctalkology.hasLocation, loc)
 		 * .addProperty(Ctalkology.hasTwitterClient, tc);
 		 **/
-		//model.close();
 
 	}
 

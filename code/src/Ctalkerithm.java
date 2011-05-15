@@ -14,12 +14,7 @@ import com.hp.hpl.jena.vocabulary.*;
 
 public class Ctalkerithm {
 
-	// name spaces
-	static String dbpResource = "http://dbpedia.org/resource/";
-	static String dbpProp = "http://dbpedia.org/property/";
-	static String dbpOwl = "http://dbpedia.org/ontology/";
-	
-	static String dbpSparql = "http://dbpedia.org/sparql";
+
 
 	public static void main(String[] args) throws Exception {
 
@@ -102,75 +97,15 @@ public class Ctalkerithm {
 			i++;
 		}
 		
-		
 		// Find everyone's location and actual name
-		TwitterClient.addUserLocations(celebs);
+		HashMap<String, Location> locationMap = new HashMap<String, Location>();
 		
+		TwitterClient.addUserLocations(celebs, locationMap);
 		for(Person celeb:celebs) {
-			TwitterClient.addUserLocations(((Celeb) celeb).talkers);
-			TwitterClient.addUserLocations(((Celeb) celeb).stalkers);
+			TwitterClient.addUserLocations(((Celeb) celeb).talkers, locationMap);
+			TwitterClient.addUserLocations(((Celeb) celeb).stalkers, locationMap);
 		}
-		
 
-		// Possibly alter location field by searching for it
-		//        search_xml = Nokogiri::XML(open("http://api.search.live.net/xml.aspx?Appid=D922B026428E58D0B1B38C3CB94E227BF6B113BB&query=#{CGI.escape(search_query)}&sources=web"))
-		//        #puts search_xml
-		//        search_ns = {"xmlns:sr" => "http://schemas.microsoft.com/LiveSearch/2008/04/XML/element", "xmlns:web" => "http://schemas.microsoft.com/LiveSearch/2008/04/XML/web"}
-		//        search_top_path = search_xml.xpath("/sr:SearchResponse/web:Web/web:Results/web:WebResult/web:Description",search_ns).first
-		//        search_top = search_top_path ? search_top_path.content : ""
-		//        search_altered_xpath = search_xml.xpath("/sr:SearchResponse/sr:Query/sr:AlteredQuery",search_ns)
-		//        search_altered = search_altered_xpath.first ? search_altered_xpath.first.content : ""
-
-
-		// Search DBpedia for location information
-		HashSet<String> locNames = new HashSet<String>();
-
-		/// fill with test locations for now
-		locNames.add("San_Francisco");
-		locNames.add("Ithaca,_New_York");
-		//////////////////////////////
-
-		// Extract the following triples from each location
-		String [] props = {"latd", "latm", "latns", "lats", "longd", "longew", "longm", "longs"};
-		String [] owlProps = {"populationTotal", "areaTotal"};
-		
-		ArrayList<Location> locations = new ArrayList();
-		for(String locName: locNames) {
-
-			// Create the prop query string
-			String queryString = "SELECT ?" + Utils.join(props, " ?") + " ?" + Utils.join(owlProps, " ?") + "\nWHERE {\n";
-			for(String prop: props) {
-				queryString += "<" + dbpResource + locName + "> <" + dbpProp + prop + "> ?" + prop + ".\n";
-			}
-			for(String owlProp:owlProps) {
-				queryString += "<" + dbpResource + locName + "> <" + dbpOwl + owlProp + "> ?" + owlProp + ".\n";
-			}
-			queryString += "}";
-
-//			System.out.println(queryString);
-			Query query = QueryFactory.create(queryString);
-
-			// Execute the query and obtain results
-			QueryExecution qe = QueryExecutionFactory.sparqlService(dbpSparql, query);
-			ResultSet results = qe.execSelect();
-
-			QuerySolution res = results.next();
-						
-			String[] locFields = new String[Location.fieldCount];
-			int k=0;
-			for(String prop: props) {
-				locFields[k++] = res.get(prop).toString();
-			}
-			for(String owlProp: owlProps) {
-				locFields[k++] = res.get(owlProp).toString();
-			}
-			Location loc = new Location(locName, locFields);
-
-			qe.close();
-
-			System.out.println(loc);
-
-		}
 	}
 
 	public static ArrayList<String> doXPath(Document doc, XPath xPathSearch) throws Exception {
