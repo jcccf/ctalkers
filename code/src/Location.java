@@ -3,6 +3,8 @@
 public class Location {
 
 	public String name;
+	public String city;
+	public String country;
 	
 	public double longitude;
 	public double latitude;
@@ -11,12 +13,22 @@ public class Location {
 	public static int fieldCount = 10;
 	
 	public Location(String n) {
-		name = n;
+		name = Utils.cleanLocation(n);
+	}
+	
+	
+	
+	public Location(float lon, float lat, String ct, String ctr) {
+		longitude = lon;
+		latitude = lat;
+		city = ct;
+		country = ctr;
+		set_name();
 	}
 	
 	public Location(String n, String[] f) {
-		name = n;
-		
+		//name = n;
+		name = Utils.cleanLocation(n);
 		
 		double[] ls = new double[8];
 		for (int i = 0; i < 8; i++) {
@@ -33,7 +45,16 @@ public class Location {
 		longitude = (ls[4] + ls[6] / 60 + ls[7]/3600) * ew;
 	}
 	
-	
+	public boolean set_name() {
+		if (!(city.equals(""))) 
+			name = city;
+		else
+			if (!(country.equals("")))
+				name = country;
+			else
+				return false;
+		return true;
+	}
 	
 	public String toString() {
 		return "{" +
