@@ -38,33 +38,121 @@ public class Database {
 	public static void add_to_database(List<Location> locs, List<Celeb> celebs) {
 		String directory = "TDB-0.8.10/work/data/project2";
 		Model model = TDBFactory.createModel(directory);
-		// create the resource and add the property		
 		model.removeAll();
-
-		Map<Location, Resource> loc_res = new HashMap<Location, Resource>();
+		
+		// Initialize Maps
+		Map<Location,Resource> loc_to_res = new HashMap<Location,Resource>();
+		Map<String,Resource> tcl_to_res = new HashMap<String,Resource>();
+		Map<String,Resource> per_to_res = new HashMap<String,Resource>();
+		
+		// Create Resource Locations
 		for (Location l : locs) {
 			Resource r = model.createResource(Ctalkology.Location)
-			.addProperty(Ctalkology.country, l.name) //TODO!!!!!!!!!!!!!!
-			.addProperty(Ctalkology.city, l.name)
+			.addProperty(Ctalkology.country, l.country) //TODO!!!!!!!!!!!!!!
+			.addProperty(Ctalkology.city, l.city)
 			.addLiteral(Ctalkology.latitude, l.latitude)
 			.addLiteral(Ctalkology.longitude, l.longitude)
 			.addLiteral(Ctalkology.population, l.populationTotal)
 			.addLiteral(Ctalkology.landArea, l.areaTotal);
-			
-			loc_res.put(l, r);
+			loc_to_res.put(l,r);
 		}
 		
-		Map<Evt, Resource> evt_res = new HashMap<Evt, Resource>();
+		
 		for (Celeb c : celebs) {
-			for (Evt e : c.events) {
-				
-				Resource ev = model.createResource(Ctalkology.Event)
-				.addLiteral(FOAF.name, e.title)
-				.addProperty(Ctalkology.hasLocation, loc);
+			
+			// Create Celebrity
+			Resource celeb_resource = model.createResource(Ctalkology.Celebrity)
+				.addLiteral(FOAF.name, c.actualName)
+				.addLiteral(Ctalkology.twitterID, c.twitterID)
+				.addProperty(Ctalkology.hasLocation, loc_to_res.get(c.location));
+			
+			// Add Twitter Client
+			if(c.twitterClient.length() > 0){
+				Resource tcl = null;
+				if(tcl_to_res.containsKey(c.twitterClient)){
+					tcl = tcl_to_res.get(c.twitterClient);
+				}
+				else{
+					tcl = model.createResource(Ctalkology.TwitterClient)
+						.addLiteral(FOAF.name,c.twitterClient);
+					tcl_to_res.put(c.twitterClient, tcl);
+				}
+				celeb_resource.addProperty(Ctalkology.hasTwitterClient, tcl);
 			}
+			
+			// Add Events
+			for (Evt e : c.events) {
+				Resource ev = model.createResource(Ctalkology.Event)
+					.addLiteral(FOAF.name, e.title)
+					.addProperty(Ctalkology.hasLocation, loc_to_res.get(e.location));
+				celeb_resource.addProperty(Ctalkology.hasEvent, ev);
+			}
+			
+			// Add Mentioners
+			for (Person p : c.talkers){
+				Resource ps = null;
+				if(per_to_res.containsKey(p.screenName)){
+					ps = per_to_res.get(p.screenName);
+				}
+				else{
+					ps = model.createResource(Ctalkology.TwitterUser);
+					if(p.location != null)
+						ps.addProperty(Ctalkology.hasLocation, loc_to_res.get(p.location));
+					if(p.actualName.length() > 0)
+						ps.addLiteral(FOAF.name, p.actualName);
+					if(p.twitterID != null)
+						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
+					if(p.twitterClient.length() > 0){
+						Resource tcl = null;
+						if(tcl_to_res.containsKey(p.twitterClient)){
+							tcl = tcl_to_res.get(p.twitterClient);
+						}
+						else{
+							tcl = model.createResource(Ctalkology.TwitterClient)
+								.addLiteral(FOAF.name,p.twitterClient);
+							tcl_to_res.put(p.twitterClient, tcl);
+						}
+						ps.addProperty(Ctalkology.hasTwitterClient, tcl);
+					}
+					per_to_res.put(p.screenName, ps);
+				}
+				ps.addProperty(Ctalkology.mentioned, celeb_resource);
+			}
+			
+			// Add Followers
+			for (Person p : c.stalkers){
+				Resource ps = null;
+				if(per_to_res.containsKey(p.screenName)){
+					ps = per_to_res.get(p.screenName);
+				}
+				else{
+					ps = model.createResource(Ctalkology.TwitterUser);
+					if(p.location != null)
+						ps.addProperty(Ctalkology.hasLocation, loc_to_res.get(p.location));
+					if(p.actualName.length() > 0)
+						ps.addLiteral(FOAF.name, p.actualName);
+					if(p.twitterID != null)
+						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
+					if(p.twitterClient.length() > 0){
+						Resource tcl = null;
+						if(tcl_to_res.containsKey(p.twitterClient)){
+							tcl = tcl_to_res.get(p.twitterClient);
+						}
+						else{
+							tcl = model.createResource(Ctalkology.TwitterClient)
+								.addLiteral(FOAF.name,p.twitterClient);
+							tcl_to_res.put(p.twitterClient, tcl);
+						}
+						ps.addProperty(Ctalkology.hasTwitterClient, tcl);
+					}
+					per_to_res.put(p.screenName, ps);
+				}
+				ps.addProperty(Ctalkology.follows, celeb_resource);				
+			}
+			
 		}
 		
-		
+		/*
 
 		Resource tc = model.createResource(Ctalkology.TwitterClient)
 				.addLiteral(FOAF.name, "Tweetie");
@@ -82,7 +170,8 @@ public class Database {
 				.addProperty(Ctalkology.mentioned, lg)
 				.addProperty(Ctalkology.hasLocation, loc)
 				.addProperty(Ctalkology.hasTwitterClient, tc);
-
+		model.close()
+		 **/
 		
 	}
 	
@@ -129,7 +218,7 @@ public class Database {
 		 * .addProperty(Ctalkology.hasLocation, loc)
 		 * .addProperty(Ctalkology.hasTwitterClient, tc);
 		 **/
-		model.close();
+		//model.close();
 
 	}
 
