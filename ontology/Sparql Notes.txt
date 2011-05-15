@@ -1,5 +1,11 @@
 http://www.w3.org/TR/rdf-sparql-query/
 
+General
+=========
+Select all triples.
+
+    SELECT * WHERE {?X ?Y ?Z.}
+
 Questions
 =========
 Who follows Lady Gaga?
