@@ -55,7 +55,7 @@ public class TwitterClient {
 			if(person.twitterID != null) { 
 				url_str = "http://api.twitter.com/1/users/lookup.xml?user_id="+ person.twitterID;
 			} else if(person.screenName != null) {
-				url_str = "http://api.twitter.com/1/users/lookup.json?screen_name="+ person.screenName;
+				url_str = "http://api.twitter.com/1/users/lookup.xml?screen_name="+ person.screenName;
 			} else {
 				i++;
 				continue;
@@ -97,6 +97,15 @@ public class TwitterClient {
 			inputSource = new InputSource(new StringReader(data));
 			String name = xPath.evaluate("/users/user/name", inputSource);
 			
+			inputSource = new InputSource(new StringReader(data));
+			String screen_name = xPath.evaluate("/users/user/screen_name", inputSource);
+			
+			inputSource = new InputSource(new StringReader(data));
+			String id = xPath.evaluate("/users/user/id", inputSource);
+			
+			
+			person.location = new Location(location);
+
 			// Either retrieve the location from the hashmap, or create a new one
 			String cleanedLocation = Utils.cleanLocation(rawLocation);
 			Location locationObj  = locationMap.get(cleanedLocation);
@@ -107,6 +116,9 @@ public class TwitterClient {
 			
 			person.location = locationObj;
 			person.actualName = name;
+			person.screenName = screen_name;
+			person.twitterID = id;
+
 
 			System.out.println(person);
 
@@ -116,10 +128,17 @@ public class TwitterClient {
 	}
 
 
-//	public static void main(String[] args) throws Exception {
+	public static void main(String[] args) throws Exception {
+		
+		Person p = new Person("smoseson");
+//		p.twitterID = "783214";
+		ArrayList<Person> test = new ArrayList<Person>();
+		test.add(p);
+		addUserLocations(test);
 //		List<String> usr_ids = new ArrayList<String>();
 //		usr_ids.add("783214");
 //		usr_ids.add("6253282");
 //		Map<String,String> loc_name = addUserLocation(usr_ids);
-//	}
+	}
+	
 }
