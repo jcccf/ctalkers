@@ -37,10 +37,10 @@ public class Database {
 	Map<String,Resource> loc_to_res;
 	Map<String,Resource> tcl_to_res;
 	Map<String,Resource> per_to_res;
-	List<Celeb> celebs;
+	List<Person> celebs;
 	Model model;
 	
-	public Database(List<Celeb> celebs){
+	public Database(List<Person> celebs){
 		this.celebs = celebs;
 		loc_to_res = new HashMap<String,Resource>();
 		tcl_to_res = new HashMap<String,Resource>();
@@ -89,7 +89,8 @@ public class Database {
 	}
 	
 	public void run(){
-		for (Celeb c : celebs) {
+		for (Person d : celebs) {
+			Celeb c = (Celeb) d;
 			// Create Celebrity
 			Resource celeb_resource = model.createResource(Ctalkology.Celebrity)
 				.addLiteral(FOAF.name, c.actualName)
