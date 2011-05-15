@@ -28,7 +28,7 @@ import org.xml.sax.InputSource;
 
 public class TwitterClient {
 	
-	public static void addUserLocations(ArrayList<Person> usrs) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, XPathExpressionException {
+	public static void addUserLocations(ArrayList<Person> usrs, HashMap<String, Location> locationMap) throws IOException, OAuthMessageSignerException, OAuthExpectationFailedException, OAuthCommunicationException, XPathExpressionException {
 
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
 				// the consumer key of this app (replace this with yours)
@@ -92,18 +92,24 @@ public class TwitterClient {
 			XPath xPath = factory.newXPath();
 			
 			InputSource inputSource = new InputSource(new StringReader(data));
-			String location = xPath.evaluate("/users/user/location", inputSource);
+			String rawLocation = xPath.evaluate("/users/user/location", inputSource);
 			
 			inputSource = new InputSource(new StringReader(data));
 			String name = xPath.evaluate("/users/user/name", inputSource);
 			
-			person.location = new Location(location);
+			// Either retrieve the location from the hashmap, or create a new one
+			String cleanedLocation = Utils.cleanLocation(rawLocation);
+			Location locationObj  = locationMap.get(cleanedLocation);
+			if(locationObj == null) {
+				locationObj = new Location(cleanedLocation);
+				locationMap.put(locationObj.name, locationObj);
+			}
 			
+			person.location = locationObj;
 			person.actualName = name;
-			
+
 			System.out.println(person);
 
-//			loc_name.put(location, name);
 			i++;
 		}
 //		return loc_name;
