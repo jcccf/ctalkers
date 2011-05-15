@@ -91,7 +91,7 @@ public class TwitterClient {
 			
 			
 			
-			loc_name.put(location, name);
+			loc_name.put(name, location);
 		}
 		return loc_name;
 	}
@@ -100,6 +100,6 @@ public class TwitterClient {
 		List<String> usr_ids = new ArrayList<String>();
 		usr_ids.add("783214");
 		usr_ids.add("6253282");
-		Map<String,String> loc_name = usr_lookup(usr_ids);
+		Map<String,String> name_loc = usr_lookup(usr_ids);
 	}
 }
