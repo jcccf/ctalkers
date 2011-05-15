@@ -110,7 +110,7 @@ public class TwitterClient {
 			String cleanedLocation = Utils.cleanLocation(rawLocation);
 			Location locationObj  = locationMap.get(cleanedLocation);
 			if(locationObj == null) {
-				locationObj = new Location(cleanedLocation);
+				locationObj = Location.createLocation(cleanedLocation);
 				locationMap.put(locationObj.name, locationObj);
 			}
 			
