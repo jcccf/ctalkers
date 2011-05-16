@@ -1,3 +1,5 @@
+import java.util.NoSuchElementException;
+
 import com.hp.hpl.jena.query.Query;
 import com.hp.hpl.jena.query.QueryExecution;
 import com.hp.hpl.jena.query.QueryExecutionFactory;
@@ -33,16 +35,21 @@ public class Location {
 
 	public void addLongAndLat(String[] f) {	
 		double[] ls = new double[8];
+		
 		for (int i = 0; i < 8; i++) {
-			if(i != 2 && i != 5)
-				ls[i] = Float.parseFloat(f[i]);
+			if(i != 2 && i != 5){
+				//System.out.println(f[i].replace("^^http://www.w3.org/2001/XMLSchema#int", ""));
+				//System.out.println(f[i].split("^")[0]);
+				ls[i] = Float.parseFloat(f[i].split("[\\^]+")[0]);
+				//ls[i] = Float.parseFloat(f[i].split("[^@]+")[0]);
+			}
 		}
 
-		populationTotal = Integer.parseInt(f[8]);
-		areaTotal = Integer.parseInt(f[9]);
+		populationTotal = Integer.parseInt(f[8].split("[\\^]+")[0]);
+		areaTotal = Integer.parseInt(f[9].split("[\\^]+")[0]);
 
-		int ns = (f[2].equals("N")) ? 1 : -1;
-		int ew = (f[5].equals("E")) ? 1 : -1;
+		int ns = (f[2].split("[\\^@]+")[0].equals("N")) ? 1 : -1;
+		int ew = (f[5].split("[\\^@]+")[0].equals("E")) ? 1 : -1;
 		latitude = (ls[0] + ls[1] / 60 + ls[3]/3600) * ns;
 		longitude = (ls[4] + ls[6] / 60 + ls[7]/3600) * ew;
 	}
@@ -70,35 +77,39 @@ public class Location {
 
 	// null if dbpedia lookup returns no city or country
 	public static Location createLocation(String locName) {
-
-		// Search DBpedia for location information
-
-		// name spaces
-		String dbpResource = "http://dbpedia.org/resource/";
-		String dbpProp = "http://dbpedia.org/property/";
-		String dbpOwl = "http://dbpedia.org/ontology/";
-		String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-		String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
-
-		String locURI = dbpResource + locName;
-
-		// try extracting city
-		Location loc = null;
-		try {
-
-			/*
-SELECT ?cityName ?countryname
-WHERE {
-<http://dbpedia.org/resource/San_Francisco>
-<http://www.w3.org/2000/01/rdf-schema#label> ?cityName;
-<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City>;
-<http://dbpedia.org/ontology/country> ?country.
-?country <http://www.w3.org/2000/01/rdf-schema#label> ?countryname.
-FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
-}
-			 */
-
-
+		locName = locName.replaceAll("[^\\p{ASCII}]", "").trim();
+		
+		if(locName.length() > 0){
+			
+			System.out.printf("Searching for %s...\n", locName);
+	
+			// Search DBpedia for location information
+	
+			// name spaces
+			String dbpResource = "http://dbpedia.org/resource/";
+			String dbpProp = "http://dbpedia.org/property/";
+			String dbpOwl = "http://dbpedia.org/ontology/";
+			String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+			String rdfs = "http://www.w3.org/2000/01/rdf-schema#";
+	
+			String locURI = dbpResource + locName;
+	
+			// try extracting city
+			Location loc = null;
+	
+				/*
+	SELECT ?cityName ?countryname
+	WHERE {
+	<http://dbpedia.org/resource/San_Francisco>
+	<http://www.w3.org/2000/01/rdf-schema#label> ?cityName;
+	<http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://dbpedia.org/ontology/City>;
+	<http://dbpedia.org/ontology/country> ?country.
+	?country <http://www.w3.org/2000/01/rdf-schema#label> ?countryname.
+	FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
+	}
+				 */
+	
+	
 			String queryString = 
 				"SELECT ?cityName ?countryName WHERE { \n" +
 				
@@ -108,61 +119,56 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 				"<" + dbpOwl + "country> ?country.\n" +
 				"?country <" + rdfs + "label> ?countryName.\n" +
 				"FILTER( lang(?countryName) = 'en' && lang(?cityName) = 'en')}";
-
+	
 			System.out.println(queryString);
 			
 			QuerySolution res = doSparql(queryString);
-
-			String cityAndCountry = res.get("cityName").toString();
-			String countryName = res.get("countryName").toString();
-
-			// try to remove country from the name
-			int commaLoc = cityAndCountry.indexOf(",");
-			String cityName = cityAndCountry;
-			if(commaLoc > 0) {
-				cityName = cityAndCountry.substring(0, cityAndCountry.indexOf(","));
-			}			
-
-			loc = new Location(cityName);
-			loc.city = cityName;
-			loc.country = countryName;
-			
-			System.out.println("city success");
-		} catch(Exception e) {
-			e.printStackTrace();
-			System.out.println("no city");
-			
-			// try extracting country
-			try {
-
-				String queryString = "SELECT ?countryName WHERE { <"+locURI+"> <"+rdfs+"label> ?countryName; <" + rdf + "type> <" + dbpOwl + "Country>. "
-				+ "FILTER langMatches(lang(?res), 'en')}";
-
-				QuerySolution res = doSparql(queryString);
-
+			if (res != null){
+		
+				String cityAndCountry = res.get("cityName").toString();
 				String countryName = res.get("countryName").toString();
-
-				loc = new Location(countryName);
+		
+				// try to remove country from the name
+				int commaLoc = cityAndCountry.indexOf(",");
+				String cityName = cityAndCountry;
+				if(commaLoc > 0) {
+					cityName = cityAndCountry.substring(0, cityAndCountry.indexOf(","));
+				}			
+		
+				loc = new Location(cityName);
+				loc.city = cityName;
 				loc.country = countryName;
-				System.out.println("country success");
-
-			} catch(Exception f) {
-				//f.printStackTrace();
-				System.out.println("no country");
+				
+				System.out.println("city success");
 			}
-			
-			
-		}
-
-
-		// try adding longitude, latitude, total pop, and total area
-		try {
+			else{
+				System.out.println("no city");
+				
+				queryString = "SELECT ?countryName WHERE { <"+locURI+"> <"+rdfs+"label> ?countryName; <" + rdf + "type> <" + dbpOwl + "Country>. "
+					+ "FILTER langMatches(lang(?countryName), 'en')}";
+	
+				res = doSparql(queryString);
+				if(res != null){
+	
+					String countryName = res.get("countryName").toString();
+	
+					loc = new Location(countryName);
+					loc.country = countryName;
+					System.out.println("country success");
+				}
+				else{
+					System.out.println("no country");
+				}
+			}
+	
+	
+			// try adding longitude, latitude, total pop, and total area
 			// Extract the following triples from each location
 			String [] props = {"latd", "latm", "latns", "lats", "longd", "longew", "longm", "longs"};
 			String [] owlProps = {"populationTotal", "areaTotal"};
-
+	
 			// Create the prop query string
-			String queryString = "SELECT ?" + Utils.join(props, " ?") + " ?" + Utils.join(owlProps, " ?") + "\nWHERE {\n";
+			queryString = "SELECT ?" + Utils.join(props, " ?") + " ?" + Utils.join(owlProps, " ?") + "\nWHERE {\n";
 			for(String prop: props) {
 				queryString += "<" + locURI + "> <" + dbpProp + prop + "> ?" + prop + ".\n";
 			}
@@ -170,29 +176,30 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 				queryString += "<" + locURI + "> <" + dbpOwl + owlProp + "> ?" + owlProp + ".\n";
 			}
 			queryString += "}";
-
-
-			QuerySolution res = doSparql(queryString);
-
-			String[] locFields = new String[Location.fieldCount];
-			int k=0;
-			for(String prop: props) {
-				locFields[k++] = res.get(prop).toString();
+	
+	
+			res = doSparql(queryString);
+			if(res != null){
+				String[] locFields = new String[Location.fieldCount];
+				int k=0;
+				for(String prop: props) {
+					locFields[k++] = res.get(prop).toString();
+				}
+				for(String owlProp: owlProps) {
+					locFields[k++] = res.get(owlProp).toString();
+				}
+				
+				if(loc != null)
+					loc.addLongAndLat(locFields);
 			}
-			for(String owlProp: owlProps) {
-				locFields[k++] = res.get(owlProp).toString();
-			}
-
-			loc.addLongAndLat(locFields);
-
-		} catch(Exception e) {
-			e.printStackTrace();
+	
+			return loc;
 		}
-
-		return loc;
+		else
+			return null;
 	}
 
-	public static QuerySolution doSparql(String queryString) {
+	public static QuerySolution doSparql(String queryString) throws NoSuchElementException {
 		String dbpSparql = "http://dbpedia.org/sparql";
 
 		Query query = QueryFactory.create(queryString);
@@ -200,10 +207,16 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 		// Execute the query and obtain results
 		QueryExecution qe = QueryExecutionFactory.sparqlService(dbpSparql, query);
 		ResultSet results = qe.execSelect();
-
-		QuerySolution firstResult = results.next();
-		qe.close();
-
+		QuerySolution firstResult = null;
+		try{
+			firstResult = results.next();
+		}
+		catch(Exception e){
+			System.out.println("No such result");
+		}
+		finally{
+			qe.close();
+		}
 		return firstResult;
 	}
 
