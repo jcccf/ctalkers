@@ -79,7 +79,7 @@ public class Location {
 
 	// null if dbpedia lookup returns no city or country
 	public static Location createLocation(String locName) {
-		locName = locName.replaceAll("[^\\p{ASCII}]", "").trim();
+		locName = locName.replaceAll("[^\\p{ASCII}]", "").replaceAll("[\\[\\]&];", "").trim();
 		
 		if(locName.length() > 0){
 			

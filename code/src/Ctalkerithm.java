@@ -19,7 +19,8 @@ public class Ctalkerithm {
 	public static void main(String[] args) throws Exception {
 
 		// Read celebrities in and get twitter XML for each
-//		String[] celebNames = Utils.readFile("../ontology/celebrities.txt").split("\n");
+		//String[] celebNames = Utils.readFile("../ontology/celebrities.txt").split("\n");
+		//String[] lastfmNames = Utils.readFile("../ontology/celebrities_lastfm.txt").split("\n");
 		String[] celebNames = Utils.readFile("../ontology/celebSmall.txt").split("\n");
 		String[] lastfmNames = Utils.readFile("../ontology/lastfmSmall.txt").split("\n");
 		
@@ -27,7 +28,7 @@ public class Ctalkerithm {
 		for (int i = 0; i < celebNames.length; i++) {
 			String celeb_name = celebNames[i];
 			Celeb celeb = new Celeb(celeb_name);
-			celeb.lastFmName = lastfmNames[i];
+			celeb.lastFmName = lastfmNames[i].replaceAll("\\+", " ");
 			celebs.add(celeb);
 		}
 		
@@ -114,7 +115,9 @@ public class Ctalkerithm {
 			TwitterClient.addUserLocations(((Celeb) celeb).stalkers, locationMap);
 		}
 
+		System.out.println("lfm1");
 		LastFm.add_details_to_evt(celebs);
+		System.out.println("lfm2");
 		Database db = new Database(celebs);
 		db.run();
 	}
