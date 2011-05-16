@@ -150,9 +150,9 @@ public class Database {
 	
 	public static void main(String... args) {
 		
-		Database db = new Database(null); // TODO This should not be null!
-		db.run();
-		
+//		Database db = new Database(LIST OF CELEBRITIES);
+//		db.run();
+//		
 //		// Sample Code
 //		Resource loc = model.createResource(Ctalkology.Location)
 //			.addProperty(Ctalkology.city, "New York")

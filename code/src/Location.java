@@ -61,6 +61,8 @@ public class Location {
 	public String toString() {
 		return "{" +
 		name + ", " +
+		"city:" + city + ", " +
+		"cntry:" + country + ", " +		
 		latitude + ", " +
 		longitude + ", " +
 		populationTotal + "," +
@@ -109,7 +111,7 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 				"?country <" + rdfs + "label> ?countryName.\n" +
 				"FILTER( lang(?countryName) = 'en' && lang(?cityName) = 'en')}";
 
-			System.out.println(queryString);
+//			System.out.println(queryString);
 			
 			QuerySolution res = doSparql(queryString);
 
@@ -182,7 +184,7 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 			for(String owlProp: owlProps) {
 				locFields[k++] = res.get(owlProp).toString();
 			}
-
+			System.out.println("locationFields: " + Utils.join(locFields, ", "));
 			loc.addLongAndLat(locFields);
 
 		} catch(Exception e) {
@@ -209,7 +211,7 @@ FILTER( lang(?countryname) = 'en' && lang(?cityName) = 'en')
 
 	public static void main(String[] args) {
 
-		System.out.println(createLocation("San_Francisco")); 
+		System.out.println(createLocation("Ithaca,_New_York")); 
 
 	}
 
