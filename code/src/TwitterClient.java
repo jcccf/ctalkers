@@ -32,16 +32,16 @@ public class TwitterClient {
 
 		OAuthConsumer consumer = new DefaultOAuthConsumer(
 				// the consumer key of this app (replace this with yours)
-				"2GybNeEQ8u3h0kB8LwdQ",
-				"X3mq3vl7x4AVuCsU33VxCl2VmHITsEneTD516losEo");
+				"tfe1kRJx9h6mergRjHs0pg",
+				"5J9mQGzIpIZ7EXcwQFOECwSjNDnQx5gEYn910IM9Q");
 
 		OAuthProvider provider = new DefaultOAuthProvider(
 				"http://twitter.com/oauth/request_token",
 				"http://twitter.com/oauth/access_token",
 				"http://twitter.com/oauth/authorize");
 
-		String ACCESS_TOKEN = "104269424-KoVBZsk7GVmeRCUIDYeQDsFDcIEa0w7mOiBuHwFY";
-		String TOKEN_SECRET = "FOTCYUjkH2dc2qB8coMxOyruUQsezNXmvOStt64";
+		String ACCESS_TOKEN = "15002894-M6OWg1WYZa2YMSaxg0UODa4n3uO01kUe0eNncLvBg";
+		String TOKEN_SECRET = "B6rJvRThzl5stgTeSwH3vuDnrrf9aLQ7yJW3DeOTg";
 
 		// if not yet done, load the token and token secret for
 		// the current user and set them
@@ -86,7 +86,7 @@ public class TwitterClient {
 
 			//x path!
 			String data = sb.toString();
-			System.out.println(data);
+			//System.out.println(data);
 			
 			XPathFactory factory=XPathFactory.newInstance();
 			XPath xPath = factory.newXPath();
@@ -106,11 +106,7 @@ public class TwitterClient {
 			
 			// Either retrieve the location from the hashmap, or create a new one
 			String cleanedLocation = Utils.cleanLocation(rawLocation);
-			Location locationObj  = locationMap.get(cleanedLocation);
-			if(locationObj == null) {
-				locationObj = Location.createLocation(cleanedLocation);
-				locationMap.put(locationObj.name, locationObj);
-			}
+			Location locationObj = Location.createLocation(cleanedLocation);
 			
 			person.location = locationObj;
 			person.actualName = name;

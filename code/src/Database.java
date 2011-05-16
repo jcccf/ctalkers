@@ -45,7 +45,7 @@ public class Database {
 		loc_to_res = new HashMap<String,Resource>();
 		tcl_to_res = new HashMap<String,Resource>();
 		per_to_res = new HashMap<String,Resource>();
-		String directory = "TDB-0.8.10/work/data/project2";
+		String directory = "../TDB-0.8.10/work/data/project2";
 		model = TDBFactory.createModel(directory);
 		model.removeAll();
 	}
@@ -73,7 +73,7 @@ public class Database {
 	}
 	
 	private Resource setTwitterClient(Resource zzz, Person p){
-		if(p.twitterClient.length() > 0){
+		if(p.twitterClient != null && p.twitterClient.length() > 0){
 			Resource tcl = null;
 			if(tcl_to_res.containsKey(p.twitterClient)){
 				tcl = tcl_to_res.get(p.twitterClient);

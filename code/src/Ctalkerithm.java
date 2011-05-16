@@ -54,6 +54,7 @@ public class Ctalkerithm {
 
 			int j = 0;
 			for(String uriString:doXPath(mentionDoc, uriXPath)) {
+				if (j > 3) break;
 				String screenName = uriString.replaceFirst("http://twitter.com/", "");
 				Person talker = new Person(screenName);
 				talker.setClient(userSourceList.get(j));
@@ -82,7 +83,9 @@ public class Ctalkerithm {
 			XPath nameXPath = XPath.newInstance(".//name");
 			XPath userClientXPath = XPath.newInstance(".//status/source");		
 
+			int p = 0;
 			for(Element stalkerE:stalkerElements) {
+				if (p > 3) break;
 				List<Element> stalkerIDList = idXPath.selectNodes(stalkerE);
 				List<Element> nameList = nameXPath.selectNodes(stalkerE);
 				List<Element> clientList = userClientXPath.selectNodes(stalkerE);
@@ -95,6 +98,7 @@ public class Ctalkerithm {
 				if(client != null) stalker.setClient(client);
 				
 				((Celeb) celebs.get(i)).stalkers.add(stalker);
+				p ++;
 			}
 			System.out.println(celeb + " stalker ids: " + Utils.join(((Celeb) celebs.get(i)).stalkers, ", "));
 			
