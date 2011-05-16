@@ -13,9 +13,9 @@ public class TwitterOAuth {
 	// need to put our keys in - Stephen
 	OAuthConsumer consumer = new DefaultOAuthConsumer(
 			// the consumer key of this app (replace this with yours)
-			"iIlNngv1KdV6XzNYkoLA",
+			"tfe1kRJx9h6mergRjHs0pg",
 			// the consumer secret of this app (replace this with yours)
-			"exQ94pBpLXFcyttvLoxU2nrktThrlsj580zjYzmoM"
+			"5J9mQGzIpIZ7EXcwQFOECwSjNDnQx5gEYn910IM9Q"
 	);
 
 	OAuthProvider provider = new DefaultOAuthProvider(
