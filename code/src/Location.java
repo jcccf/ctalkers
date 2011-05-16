@@ -68,6 +68,8 @@ public class Location {
 	public String toString() {
 		return "{" +
 		name + ", " +
+		"city:" + city + ", " +
+		"cntry:" + country + ", " +		
 		latitude + ", " +
 		longitude + ", " +
 		populationTotal + "," +
@@ -119,8 +121,9 @@ public class Location {
 				"<" + dbpOwl + "country> ?country.\n" +
 				"?country <" + rdfs + "label> ?countryName.\n" +
 				"FILTER( lang(?countryName) = 'en' && lang(?cityName) = 'en')}";
-	
+
 			System.out.println(queryString);
+
 			
 			QuerySolution res = doSparql(queryString);
 			if (res != null){
@@ -194,6 +197,7 @@ public class Location {
 			}
 	
 			return loc;
+
 		}
 		else
 			return null;
@@ -222,7 +226,7 @@ public class Location {
 
 	public static void main(String[] args) {
 
-		System.out.println(createLocation("San_Francisco")); 
+		System.out.println(createLocation("Ithaca,_New_York")); 
 
 	}
 
