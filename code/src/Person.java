@@ -22,13 +22,10 @@ public class Person {
 	public void setClient(String clientURI) {
 		twitterClient = clientURI.replaceAll("\\<.*?>","");
 	}
-	
-	
-	
-
 
 	public String toString() {
 		return "[" 
+		+ showVar("actName", actualName) + ", "
 		+ showVar("sn", screenName) + ", "
 		+ showVar("id", twitterID) + ", "
 		+ showVar("clnt", twitterClient) + ", "

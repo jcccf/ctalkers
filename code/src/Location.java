@@ -83,7 +83,7 @@ public class Location {
 		
 		if(locName.length() > 0){
 			
-			System.out.printf("Searching for %s...\n", locName);
+			//System.out.printf("Searching for location: %s\n", locName);
 	
 			// Search DBpedia for location information
 	
@@ -136,16 +136,18 @@ public class Location {
 				String cityName = cityAndCountry;
 				if(commaLoc > 0) {
 					cityName = cityAndCountry.substring(0, cityAndCountry.indexOf(","));
-				}			
+				}
+				cityName = removeEn(cityName);
+				countryName = removeEn(countryName);
 		
 				loc = new Location(cityName);
 				loc.city = cityName;
 				loc.country = countryName;
 				
-				System.out.println("city success");
+				//System.out.println("city success");
 			}
 			else{
-				System.out.println("no city");
+				//System.out.println("no city");
 				
 				queryString = "SELECT ?countryName WHERE { <"+locURI+"> <"+rdfs+"label> ?countryName; <" + rdf + "type> <" + dbpOwl + "Country>. "
 					+ "FILTER langMatches(lang(?countryName), 'en')}";
@@ -155,12 +157,14 @@ public class Location {
 	
 					String countryName = res.get("countryName").toString();
 	
+					countryName = removeEn(countryName);
+					
 					loc = new Location(countryName);
 					loc.country = countryName;
-					System.out.println("country success");
+//					System.out.println("country success");
 				}
 				else{
-					System.out.println("no country");
+					System.out.println("No loc: " + locName);
 				}
 			}
 	
@@ -195,7 +199,9 @@ public class Location {
 				if(loc != null)
 					loc.addLongAndLat(locFields);
 			}
-	
+			
+			if(loc!=null) System.out.println("Added loc: "+ loc);
+			
 			return loc;
 
 		}
@@ -205,7 +211,7 @@ public class Location {
 
 	public static QuerySolution doSparql(String queryString) throws NoSuchElementException {
 		String dbpSparql = "http://dbpedia.org/sparql";
-
+		
 		Query query = QueryFactory.create(queryString);
 
 		// Execute the query and obtain results
@@ -216,7 +222,7 @@ public class Location {
 			firstResult = results.next();
 		}
 		catch(Exception e){
-			System.out.println("No such result");
+			//System.out.println("No such result");
 		}
 		finally{
 			qe.close();
@@ -224,6 +230,10 @@ public class Location {
 		return firstResult;
 	}
 
+	public static String removeEn(String s) {
+		return s.replaceAll("@en", "");
+	}
+	
 	public static void main(String[] args) {
 
 		System.out.println(createLocation("Ithaca,_New_York")); 

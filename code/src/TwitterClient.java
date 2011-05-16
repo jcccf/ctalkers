@@ -73,7 +73,7 @@ public class TwitterClient {
 
 			// response status should be 200 OK
 			int statusCode = request.getResponseCode();
-			System.out.println(statusCode);
+//			System.out.println(statusCode);
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(
 					request.getInputStream()));
@@ -114,7 +114,7 @@ public class TwitterClient {
 			person.twitterID = id;
 
 
-			System.out.println(person);
+			System.out.println("Filled in person: " + person);
 
 			i++;
 		}
