@@ -112,6 +112,7 @@ public class Database {
 			
 			// Add Events
 			for (Evt e : c.events) {
+				System.out.println("Adding an event!");
 				Resource ev = model.createResource(Ctalkology.Event)
 					.addLiteral(FOAF.name, e.title);
 				setLocation(ev, e.location);

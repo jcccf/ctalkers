@@ -58,6 +58,7 @@ public class LastFm {
 		for (Person d : celebs) {
 			Celeb c = (Celeb) d;
 			Collection<Event> evts = Artist.getEvents(c.lastFmName, key);
+			System.out.println(evts.size());
 			List<Evt> ets = new ArrayList<Evt>();
 			c.events = ets;
 			for (Event evt : evts) {
