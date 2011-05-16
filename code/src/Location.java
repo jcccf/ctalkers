@@ -122,7 +122,7 @@ public class Location {
 				"?country <" + rdfs + "label> ?countryName.\n" +
 				"FILTER( lang(?countryName) = 'en' && lang(?cityName) = 'en')}";
 
-			System.out.println(queryString);
+			//System.out.println(queryString);
 
 			
 			QuerySolution res = doSparql(queryString);
