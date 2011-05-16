@@ -34,3 +34,13 @@ export TDBROOT=/..../TDB-0.8.10
 export JOSEKIROOT=/...../Joseki-3.4.3
 export CLASSPATH=$CLASSPATH:$TDBROOT/lib
 ./bin/rdfserver joseki-config-project2-tdb.ttl 
+
+
+
+ja:reasoner [  
+   ja:reasonerClass "org.mindswap.pellet.jena.PelletReasonerFactory";  
+   ja:schema [
+      a ja:MemoryModel;
+      ja:content [ja:externalContent "../ontology/ctalkology.owl" ];
+   ];
+];

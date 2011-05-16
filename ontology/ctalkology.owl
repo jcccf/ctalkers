@@ -177,10 +177,9 @@
     
 
 
-    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#twitterID -->
+    <!-- http://www.semanticweb.org/ontologies/2011/4/ctalkology.owl#twitterId -->
 
-    <owl:DatatypeProperty rdf:about="&ctalkology;twitterID">
-        <rdfs:domain rdf:resource="&ctalkology;TwitterUser"/>
+    <owl:DatatypeProperty rdf:about="&ctalkology;twitterId">
         <rdfs:range rdf:resource="&rdfs;Literal"/>
     </owl:DatatypeProperty>
     
@@ -265,7 +264,7 @@
     <owl:Class rdf:about="&ctalkology;TwitterUser">
         <owl:equivalentClass>
             <owl:Restriction>
-                <owl:onProperty rdf:resource="&ctalkology;twitterID"/>
+                <owl:onProperty rdf:resource="&ctalkology;twitterId"/>
                 <owl:cardinality rdf:datatype="&xsd;nonNegativeInteger">1</owl:cardinality>
             </owl:Restriction>
         </owl:equivalentClass>

@@ -58,12 +58,15 @@ public class Database {
 			}
 			else{
 				Resource r = model.createResource(Ctalkology.Location)
-					.addProperty(Ctalkology.country, l.country)
-					.addProperty(Ctalkology.city, l.city)
 					.addLiteral(Ctalkology.latitude, l.latitude)
 					.addLiteral(Ctalkology.longitude, l.longitude)
 					.addLiteral(Ctalkology.population, l.populationTotal)
 					.addLiteral(Ctalkology.landArea, l.areaTotal);
+				if(l.city != null && l.city.length() > 0)
+					r.addProperty(Ctalkology.city, l.city);
+				if(l.country != null && l.country.length() > 0)
+					r.addProperty(Ctalkology.country, l.country);
+					
 				loc_to_res.put(l.name,r);
 				locres = r;
 			}
@@ -89,12 +92,21 @@ public class Database {
 	}
 	
 	public void run(){
+		Resource loc = model.createResource(Ctalkology.Location)
+		.addProperty(Ctalkology.city, "New York")
+		.addLiteral(Ctalkology.latitude, 40.7141667)
+		.addLiteral(Ctalkology.longitude, -74.0063889)
+		.addLiteral(Ctalkology.population, 8);
 		for (Person d : celebs) {
 			Celeb c = (Celeb) d;
 			// Create Celebrity
 			Resource celeb_resource = model.createResource(Ctalkology.Celebrity)
 				.addLiteral(FOAF.name, c.actualName)
-				.addLiteral(Ctalkology.twitterID, c.twitterID);
+				.addProperty(Ctalkology.twitterId, c.twitterID);
+			System.out.println(c.actualName);
+			System.out.println(c.twitterID);
+			
+			
 			setTwitterClient(celeb_resource, c);
 			setLocation(celeb_resource, c.location);
 			
@@ -117,7 +129,7 @@ public class Database {
 					if(p.actualName.length() > 0)
 						ps.addLiteral(FOAF.name, p.actualName);
 					if(p.twitterID != null)
-						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
+						ps.addProperty(Ctalkology.twitterId, p.twitterID);
 					setLocation(ps, p.location);
 					setTwitterClient(ps, p);
 					per_to_res.put(p.screenName, ps);
@@ -136,7 +148,7 @@ public class Database {
 					if(p.actualName.length() > 0)
 						ps.addLiteral(FOAF.name, p.actualName);
 					if(p.twitterID != null)
-						ps.addLiteral(Ctalkology.twitterID, p.twitterID);
+						ps.addProperty(Ctalkology.twitterId, p.twitterID);
 					setLocation(ps, p.location);
 					setTwitterClient(ps, p);
 					per_to_res.put(p.screenName, ps);
@@ -149,6 +161,38 @@ public class Database {
 	}
 	
 	public static void main(String... args) {
+		String directory = "../TDB-0.8.10/work/data/project2";
+		Model model = TDBFactory.createModel(directory);
+		model.removeAll();
+		
+		Resource loc = model.createResource(Ctalkology.Location)
+		.addProperty(Ctalkology.city, "New York")
+		.addLiteral(Ctalkology.latitude, 40.7141667)
+		.addLiteral(Ctalkology.longitude, -74.0063889)
+		.addLiteral(Ctalkology.population, 8);
+	
+	Resource loc2 = model.createResource(Ctalkology.Location)
+		.addProperty(Ctalkology.city, "San Francisco")
+		.addLiteral(Ctalkology.latitude, 37.775)
+		.addLiteral(Ctalkology.longitude, -122.4183333)
+		.addLiteral(Ctalkology.population, 100);
+	
+	Resource tc = model.createResource(Ctalkology.TwitterClient)
+	.addLiteral(FOAF.name, "Tweetie"); 
+	
+	Resource ev = model.createResource(Ctalkology.Event)
+		.addLiteral(FOAF.name, "Calevent")
+		.addProperty(Ctalkology.hasLocation, loc2);
+		
+		Resource lg = model.createResource(Ctalkology.Celebrity)
+		.addLiteral(FOAF.name, "Lady Gaga")
+		.addProperty(Ctalkology.hasTwitterClient, tc)
+		.addProperty(Ctalkology.hasEvent, ev)
+		.addProperty(Ctalkology.hasLocation, loc)
+		.addLiteral(Ctalkology.twitterId, "buggy")
+		.addLiteral(Ctalkology.city, "Sanny");
+		
+		model.close();
 		
 //		Database db = new Database(LIST OF CELEBRITIES);
 //		db.run();
