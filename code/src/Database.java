@@ -161,8 +161,8 @@ public class Database {
 			
 			// HACK Set some random Twitter client if doesn't exist
 			if(c.twitterClient == null && tcl_to_res.size() > 0){
-				Resource[] values = (Resource[]) tcl_to_res.values().toArray();
-				celeb_resource.addProperty(Ctalkology.hasTwitterClient, values[new Random().nextInt(values.length)]);
+				Object[] values = tcl_to_res.values().toArray();
+				celeb_resource.addProperty(Ctalkology.hasTwitterClient, (Resource) values[new Random().nextInt(values.length)]);
 			}
 		}
 		
