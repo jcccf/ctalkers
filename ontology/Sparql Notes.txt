@@ -92,6 +92,54 @@ Who follows/mentions a celebrity and lives in the same place as the celebrity? (
         foaf:name "Lady Gaga" ^^ xs:string;
         ct:hasLocation ?location.}
     }
+    
+What are all the locations in the database? (OKAY)
+
+    SELECT ?location ?city ?country ?lat ?lon
+    WHERE {
+      OPTIONAL { ?location ct:city ?city. }
+      OPTIONAL { ?location ct:country ?country. }
+      OPTIONAL { ?location ct:latitude ?lat. }
+      OPTIONAL { ?location ct:longitude ?lon. }
+    }
+
+List me all events of all celebrities.
+
+    SELECT ?celebname ?eventname
+    WHERE {
+      ?celeb
+        ct:hasEvent ?event;
+        foaf:name ?celebname.
+      ?event foaf:name ?eventname.
+    }
+
+List me events of Lady Gaga.
+
+    SELECT ?eventname
+    WHERE {
+      ?celeb
+        ct:hasEvent ?event;
+        foaf:name "Lady Gaga" ^^ xs:string.
+      ?event foaf:name ?eventname.
+    }
+
+List me all Twitter clients.
+
+    SELECT DISTINCT ?twitterclient ?clientname
+    WHERE {
+      ?person ct:hasTwitterClient ?twitterclient.
+      ?twitterclient foaf:name ?clientname.
+    }
+
+List me all users and their Twitter clients.
+
+    SELECT ?name ?clientname
+    WHERE {
+      ?person 
+        ct:hasTwitterClient ?twitterclient; 
+        foaf:name ?name.
+      ?twitterclient foaf:name ?clientname.
+    }
 
 Who lives in locations that are cities with populations greater than 5? (OKAY)
 
