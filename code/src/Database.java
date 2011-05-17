@@ -59,9 +59,11 @@ public class Database {
 			else{
 				Resource r = model.createResource(Ctalkology.Location)
 					.addLiteral(Ctalkology.latitude, l.latitude)
-					.addLiteral(Ctalkology.longitude, l.longitude)
-					.addLiteral(Ctalkology.population, l.populationTotal)
-					.addLiteral(Ctalkology.landArea, l.areaTotal);
+					.addLiteral(Ctalkology.longitude, l.longitude);
+				if(l.populationTotal > 0)
+					r.addLiteral(Ctalkology.population, l.populationTotal);
+				if(l.areaTotal > 0)
+					r.addLiteral(Ctalkology.landArea, l.areaTotal);
 				if(l.city != null && l.city.length() > 0)
 					r.addProperty(Ctalkology.city, l.city);
 				if(l.country != null && l.country.length() > 0)
@@ -156,8 +158,14 @@ public class Database {
 				}
 				ps.addProperty(Ctalkology.follows, celeb_resource);
 			}
-		}
 			
+			// HACK Set some random Twitter client if doesn't exist
+			if(c.twitterClient == null && tcl_to_res.size() > 0){
+				Resource[] values = (Resource[]) tcl_to_res.values().toArray();
+				celeb_resource.addProperty(Ctalkology.hasTwitterClient, values[new Random().nextInt(values.length)]);
+			}
+		}
+		
 		model.close();
 	}
 	
